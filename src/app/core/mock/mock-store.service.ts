@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   AppNotification,
+  AssessmentQuestion,
   BeneficiaryProfile,
   Complaint,
   Donation,
@@ -26,6 +27,7 @@ import { seedDonations } from './fixtures/donations.fixture';
 import { seedSupportTickets } from './fixtures/support.fixture';
 import { seedComplaints } from './fixtures/complaints.fixture';
 import { seedNotifications } from './fixtures/notifications.fixture';
+import { seedAssessmentQuestions } from './fixtures/assessment.fixture';
 import {
   NotificationPreferences,
   seedBeneficiaryProfile,
@@ -54,6 +56,7 @@ export class MockStore {
   readonly supportTickets: SupportTicket[] = structuredClone(seedSupportTickets);
   readonly complaints: Complaint[] = structuredClone(seedComplaints);
   readonly notifications: AppNotification[] = structuredClone(seedNotifications);
+  readonly assessmentQuestions: AssessmentQuestion[] = structuredClone(seedAssessmentQuestions);
   beneficiaryProfile: BeneficiaryProfile = structuredClone(seedBeneficiaryProfile);
   notificationPreferences: NotificationPreferences = structuredClone(seedNotificationPreferences);
 

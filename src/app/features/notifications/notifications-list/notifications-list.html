@@ -1,0 +1,88 @@
+<div class="pb-10">
+  <app-page-header
+    [title]="'notifications.list.title' | translate"
+    [subtitle]="'notifications.list.subtitle' | translate"
+  >
+    <div pageHeaderActions>
+      <button
+        type="button"
+        class="inline-flex min-h-11 items-center gap-2 rounded-card border border-ink-300 bg-surface px-3 text-sm font-medium text-ink-700 hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="unreadCount() === 0 || markingAll()"
+        (click)="onMarkAllRead()"
+      >
+        <svg lucideCheckCheck [size]="18"></svg>
+        <span>{{ 'notifications.list.markAllRead' | translate }}</span>
+      </button>
+    </div>
+  </app-page-header>
+
+  <div class="mt-4">
+    @if (loading()) {
+      <ul class="space-y-2">
+        @for (i of skeletonRows; track i) {
+          <li class="flex items-start gap-3 rounded-card border border-ink-300 bg-surface p-4">
+            <div class="h-10 w-10 shrink-0 animate-pulse rounded-full bg-ink-300/40"></div>
+            <div class="min-w-0 flex-1 space-y-2">
+              <div class="h-4 w-1/2 animate-pulse rounded bg-ink-300/40"></div>
+              <div class="h-4 w-3/4 animate-pulse rounded bg-ink-300/40"></div>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else if (items().length === 0) {
+      <div
+        class="flex flex-col items-center gap-3 rounded-card border border-dashed border-ink-300 bg-surface p-10 text-center"
+      >
+        <svg lucideInbox [size]="40" class="text-ink-300"></svg>
+        <p class="text-ink-500">{{ 'notifications.list.empty' | translate }}</p>
+      </div>
+    } @else {
+      <ul class="space-y-2">
+        @for (notification of items(); track notification.id) {
+          <li
+            class="flex items-stretch gap-1 rounded-card border border-ink-300 transition-colors"
+            [class.bg-brand-50]="!notification.isRead"
+            [class.bg-surface]="notification.isRead"
+          >
+            <button
+              type="button"
+              class="flex min-w-0 flex-1 items-start gap-3 rounded-card p-4 text-start hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              (click)="onOpen(notification)"
+            >
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                [class.bg-brand-100]="!notification.isRead"
+                [class.text-brand-700]="!notification.isRead"
+                [class.bg-surface-container-high]="notification.isRead"
+                [class.text-ink-500]="notification.isRead"
+              >
+                <svg lucideBell [size]="18"></svg>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="flex items-center gap-2">
+                  <span class="truncate font-medium text-ink-900">{{ notification.title }}</span>
+                  @if (!notification.isRead) {
+                    <span
+                      class="h-2 w-2 shrink-0 rounded-full bg-brand-500"
+                      [attr.aria-label]="'notifications.list.unread' | translate"
+                    ></span>
+                  }
+                </span>
+                <span class="mt-1 block text-sm text-ink-500">{{ notification.body }}</span>
+                <span class="mt-1 block text-xs text-ink-500">{{ formatDate(notification.createdAt) }}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-card text-ink-500 hover:bg-surface-container-low hover:text-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              [attr.aria-label]="'notifications.list.delete' | translate"
+              (click)="onRemove($event, notification)"
+            >
+              <svg lucideTrash2 [size]="18"></svg>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

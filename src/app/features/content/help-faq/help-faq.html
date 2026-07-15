@@ -1,0 +1,55 @@
+<app-page-header
+  [showBack]="true"
+  [title]="'content.help.title' | translate"
+  [subtitle]="'content.help.subtitle' | translate"
+/>
+
+<div class="mx-auto flex max-w-3xl flex-col gap-6">
+  <section class="flex flex-col gap-3">
+    @for (faq of faqs; track faq.questionKey) {
+      <details class="group rounded-card border border-ink-300 bg-surface">
+        <summary
+          class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-start [&::-webkit-details-marker]:hidden"
+        >
+          <span class="text-sm font-medium text-ink-900">{{ faq.questionKey | translate }}</span>
+          <svg
+            lucideChevronDown
+            [size]="18"
+            class="shrink-0 text-ink-500 transition-transform group-open:rotate-180"
+          ></svg>
+        </summary>
+        <div class="border-t border-ink-300 px-4 py-3 text-sm leading-relaxed text-ink-700">
+          {{ faq.answerKey | translate }}
+        </div>
+      </details>
+    }
+  </section>
+
+  <section class="rounded-card border border-ink-300 bg-surface-container-low p-5">
+    <h2 class="text-base font-semibold text-ink-900">{{ 'content.help.contact.title' | translate }}</h2>
+    <p class="mt-1 text-sm text-ink-500">{{ 'content.help.contact.intro' | translate }}</p>
+
+    @if (isLoading()) {
+      <div class="mt-4 flex py-2">
+        <app-spinner [size]="20" />
+      </div>
+    } @else if (settings(); as data) {
+      <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:gap-6">
+        <a
+          [href]="'tel:' + data.supportPhone"
+          class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-brand-500 hover:text-brand-600"
+        >
+          <svg lucidePhone [size]="18" class="shrink-0"></svg>
+          <span dir="ltr">{{ data.supportPhone }}</span>
+        </a>
+        <a
+          [href]="'mailto:' + data.supportEmail"
+          class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-brand-500 hover:text-brand-600"
+        >
+          <svg lucideMail [size]="18" class="shrink-0"></svg>
+          <span dir="ltr">{{ data.supportEmail }}</span>
+        </a>
+      </div>
+    }
+  </section>
+</div>

@@ -2,8 +2,27 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env/environment';
-import { PageRequest, PagedResult, ReconstructionRequest } from '@core/models';
+import {
+  Address,
+  DamageSeverity,
+  PageRequest,
+  PagedResult,
+  PropertyType,
+  ReconstructionRequest,
+  RequestType,
+} from '@core/models';
 import { PagedRequestsDto, ReconstructionRequestDto, mapPagedRequestsFromDto, mapRequestFromDto } from './dto/request.dto';
+
+export interface CreateRequestPayload {
+  type: RequestType;
+  propertyType: PropertyType;
+  severity: DamageSeverity;
+  description: string;
+  address: Address;
+  teamId?: string;
+  contactName?: string;
+  contactPhone?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class RequestsApi {
@@ -24,5 +43,15 @@ export class RequestsApi {
 
   getRequestDetails(id: string): Observable<ReconstructionRequest> {
     return this.http.get<ReconstructionRequestDto>(`${this.base}/${id}`).pipe(map(mapRequestFromDto));
+  }
+
+  createRequest(payload: CreateRequestPayload): Observable<ReconstructionRequest> {
+    return this.http.post<ReconstructionRequestDto>(this.base, payload).pipe(map(mapRequestFromDto));
+  }
+
+  submitDamageReport(payload: CreateRequestPayload): Observable<ReconstructionRequest> {
+    return this.http
+      .post<ReconstructionRequestDto>(`${this.base}/damage-report`, payload)
+      .pipe(map(mapRequestFromDto));
   }
 }

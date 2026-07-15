@@ -1,0 +1,79 @@
+<app-page-header
+  [title]="'complaints.list.title' | translate"
+  [subtitle]="!loading() ? ('complaints.list.subtitle' | translate: { count: totalCount() }) : undefined"
+/>
+
+<div class="flex flex-wrap items-end gap-3">
+  <select
+    class="min-h-11 rounded-card border border-ink-300 bg-surface px-3 text-sm text-ink-900 focus-visible:border-brand-500"
+    [attr.aria-label]="'complaints.list.statusFilter' | translate"
+    [value]="status()"
+    (change)="onStatusChange($any($event.target).value)"
+  >
+    <option value="">{{ 'complaints.list.allStatuses' | translate }}</option>
+    @for (statusOption of statusOptions; track statusOption) {
+      <option [value]="statusOption">{{ 'shared.statusPill.support.' + statusOption | translate }}</option>
+    }
+  </select>
+</div>
+
+<div class="mt-4">
+  @if (loading()) {
+    <div class="grid gap-3 sm:grid-cols-2">
+      @for (i of skeletonRows; track i) {
+        <div class="rounded-card border border-ink-300 bg-surface p-4">
+          <div class="space-y-3">
+            <div class="h-4 w-2/3 animate-pulse rounded bg-ink-300/40"></div>
+            <div class="h-4 w-1/2 animate-pulse rounded bg-ink-300/40"></div>
+            <div class="h-4 w-full animate-pulse rounded bg-ink-300/40"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+      <svg lucideMessageSquareWarning [size]="32" class="mx-auto text-ink-500"></svg>
+      <p class="mt-3 font-medium text-ink-900">{{ 'common.noResults' | translate }}</p>
+      <p class="mt-1 text-sm text-ink-500">{{ 'complaints.list.emptyHint' | translate }}</p>
+    </div>
+  } @else {
+    <div class="grid gap-3 sm:grid-cols-2">
+      @for (complaint of items(); track complaint.id) {
+        <a
+          class="block rounded-card border border-ink-300 bg-surface p-4 hover:border-brand-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+          [routerLink]="['/app/complaints', complaint.id]"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate font-medium text-ink-900">{{ complaint.complaintNumber }}</p>
+              <p class="mt-1 truncate text-sm text-ink-500">{{ complaint.teamName }}</p>
+            </div>
+            <app-status-pill context="support" [status]="complaint.status" />
+          </div>
+
+          @let reasons = activeReasons(complaint.reasons);
+          @if (reasons.length > 0) {
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              @for (reason of reasons; track reason) {
+                <span class="inline-flex items-center rounded-full bg-sand-100 px-2.5 py-0.5 text-xs font-medium text-sand-700">
+                  {{ 'complaints.reason.' + reason | translate }}
+                </span>
+              }
+            </div>
+          }
+
+          <p class="mt-3 line-clamp-2 text-sm text-ink-700">{{ complaint.description }}</p>
+          <p class="mt-3 text-xs text-ink-500">{{ complaint.createdAt | date: 'mediumDate' }}</p>
+        </a>
+      }
+    </div>
+  }
+</div>
+
+<app-paginator
+  class="mt-4 block"
+  [pageNo]="pageNo()"
+  [pageSize]="pageSize()"
+  [totalCount]="totalCount()"
+  (pageChange)="pageNo.set($event)"
+/>

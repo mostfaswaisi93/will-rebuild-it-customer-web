@@ -1,0 +1,282 @@
+<app-public-nav />
+
+<main class="relative mx-auto max-w-2xl px-4 py-8 sm:py-10">
+  <app-spinner-overlay [active]="isSubmitting()" />
+
+  @if (result(); as created) {
+    <div class="rounded-card bg-surface p-6 text-center shadow-card sm:p-8">
+      <svg lucideCircleCheck [size]="48" class="mx-auto text-brand-500"></svg>
+      <h2 class="mt-4 text-xl font-semibold text-ink-900">{{ 'wizards.newBeneficiary.confirm.title' | translate }}</h2>
+      <p class="mt-2 text-sm text-ink-500">{{ 'wizards.newBeneficiary.confirm.body' | translate }}</p>
+
+      <div class="mx-auto mt-5 max-w-xs rounded-card bg-surface-container-low px-4 py-3">
+        <p class="text-xs text-ink-500">{{ 'wizards.newBeneficiary.confirm.requestNumber' | translate }}</p>
+        <p class="mt-1 text-lg font-semibold text-ink-900">{{ created.requestNumber }}</p>
+      </div>
+
+      <a
+        routerLink="/pub/email-check/request"
+        class="mt-6 inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white hover:bg-brand-600"
+      >
+        {{ 'wizards.newBeneficiary.confirm.signIn' | translate }}
+      </a>
+    </div>
+  } @else {
+    <div class="mb-6 text-center">
+      <h1 class="text-2xl font-bold text-ink-900 sm:text-3xl">{{ 'wizards.newBeneficiary.title' | translate }}</h1>
+      <p class="mt-2 text-sm text-ink-500">{{ 'wizards.newBeneficiary.subtitle' | translate }}</p>
+    </div>
+
+    <app-wizard-stepper
+      [stepNumber]="currentStep() + 1"
+      [totalSteps]="totalSteps"
+      [title]="stepTitleKey() | translate"
+    />
+
+    <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+      @if (currentStep() === 0) {
+        <div class="flex flex-col gap-5 rounded-card bg-surface p-5 shadow-card sm:p-6">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label for="nb-first-name" class="mb-1 block text-sm font-medium text-ink-700">
+                {{ 'wizards.newBeneficiary.fields.firstName' | translate }}
+              </label>
+              <input
+                id="nb-first-name"
+                type="text"
+                formControlName="firstName"
+                autocomplete="given-name"
+                class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+              />
+              @if (form.controls.firstName.touched && form.controls.firstName.invalid) {
+                <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label for="nb-last-name" class="mb-1 block text-sm font-medium text-ink-700">
+                {{ 'wizards.newBeneficiary.fields.lastName' | translate }}
+              </label>
+              <input
+                id="nb-last-name"
+                type="text"
+                formControlName="lastName"
+                autocomplete="family-name"
+                class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+              />
+              @if (form.controls.lastName.touched && form.controls.lastName.invalid) {
+                <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <div>
+            <label for="nb-email" class="mb-1 block text-sm font-medium text-ink-700">
+              {{ 'wizards.newBeneficiary.fields.email' | translate }}
+            </label>
+            <input
+              id="nb-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+            />
+            @if (form.controls.email.touched && form.controls.email.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'wizards.newBeneficiary.errors.email' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <app-phone-input formControlName="phone" [labelKey]="'wizards.newBeneficiary.fields.phone'" />
+            @if (form.controls.phone.touched && form.controls.phone.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'wizards.newBeneficiary.errors.phone' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <app-damage-category-select
+              formControlName="propertyType"
+              [labelKey]="'wizards.newBeneficiary.fields.propertyType'"
+            />
+            @if (form.controls.propertyType.touched && form.controls.propertyType.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <app-severity-select formControlName="severity" [labelKey]="'wizards.newBeneficiary.fields.severity'" />
+            @if (form.controls.severity.touched && form.controls.severity.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <span class="mb-2 block text-sm font-medium text-ink-700">
+              {{ 'wizards.newBeneficiary.fields.location' | translate }}
+            </span>
+            <app-address-picker formControlName="address" />
+            @if (form.controls.address.touched && form.controls.address.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'wizards.newBeneficiary.errors.location' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <label for="nb-description" class="mb-1 block text-sm font-medium text-ink-700">
+              {{ 'wizards.newBeneficiary.fields.description' | translate }}
+            </label>
+            <textarea
+              id="nb-description"
+              formControlName="description"
+              rows="4"
+              [placeholder]="'wizards.newBeneficiary.fields.descriptionPlaceholder' | translate"
+              class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 py-2 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+            ></textarea>
+            @if (form.controls.description.touched && form.controls.description.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <span class="mb-2 block text-sm font-medium text-ink-700">
+              {{ 'wizards.newBeneficiary.fields.photos' | translate }}
+            </span>
+            <app-file-uploader [files]="photos()" (filesChange)="photos.set($event)" />
+          </div>
+
+          <label class="flex items-start gap-3">
+            <input
+              type="checkbox"
+              formControlName="consent"
+              class="mt-0.5 h-5 w-5 shrink-0 rounded border-ink-300 text-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+            />
+            <span class="text-sm text-ink-700">{{ 'wizards.newBeneficiary.fields.consent' | translate }}</span>
+          </label>
+          @if (form.controls.consent.touched && form.controls.consent.invalid) {
+            <p class="-mt-3 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+          }
+        </div>
+      }
+
+      @if (currentStep() === 1) {
+        <div class="rounded-card bg-surface p-5 shadow-card sm:p-6">
+          <p class="mb-5 text-center text-sm text-ink-500">{{ 'wizards.newBeneficiary.verify.body' | translate }}</p>
+          <app-otp-verification-step
+            [code]="otpCode()"
+            (codeChange)="otpCode.set($event)"
+            (resend)="onResend()"
+          />
+          @if (otpError()) {
+            <p class="mt-4 text-center text-sm text-danger">{{ 'wizards.newBeneficiary.verify.invalid' | translate }}</p>
+          }
+        </div>
+      }
+
+      @if (currentStep() === 2) {
+        <div class="flex flex-col gap-5 rounded-card bg-surface p-5 shadow-card sm:p-6">
+          <div>
+            <app-password-field
+              formControlName="password"
+              [showRules]="true"
+              [labelKey]="'wizards.newBeneficiary.fields.password'"
+            />
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+            }
+          </div>
+          <div>
+            <app-password-field
+              formControlName="confirmPassword"
+              [labelKey]="'wizards.newBeneficiary.fields.confirmPassword'"
+            />
+            @if (form.controls.confirmPassword.touched && form.hasError('mustMatch')) {
+              <p class="mt-1 text-sm text-danger">{{ 'wizards.newBeneficiary.errors.passwordMismatch' | translate }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      @if (currentStep() === 3) {
+        <div class="flex flex-col gap-4 rounded-card bg-surface p-5 shadow-card sm:p-6">
+          <p class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.title' | translate }}</p>
+
+          <dl class="divide-y divide-ink-300/60">
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.name' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">
+                {{ form.controls.firstName.value }} {{ form.controls.lastName.value }}
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.email' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900" dir="ltr">{{ form.controls.email.value }}</dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.phone' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900" dir="ltr">{{ form.controls.phone.value }}</dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.propertyType' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">
+                @if (form.controls.propertyType.value; as pt) {
+                  {{ 'master.propertyType.' + pt | translate }}
+                }
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.severity' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">
+                @if (form.controls.severity.value; as sv) {
+                  {{ 'master.severity.' + sv | translate }}
+                }
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.location' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">
+                @if (form.controls.address.value; as addr) {
+                  {{ 'master.governorate.' + addr.governorate | translate }}
+                  @if (addr.district) {
+                    <span class="text-ink-500">·</span> {{ addr.district }}
+                  }
+                }
+              </dd>
+            </div>
+            <div class="py-3">
+              <dt class="mb-1 text-sm text-ink-500">{{ 'wizards.newBeneficiary.summary.description' | translate }}</dt>
+              <dd class="whitespace-pre-line text-sm text-ink-700">{{ form.controls.description.value }}</dd>
+            </div>
+          </dl>
+        </div>
+      }
+
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-card border border-outline px-5 text-sm font-medium text-ink-700 hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
+          [disabled]="currentStep() === 0"
+          (click)="goBack()"
+        >
+          {{ 'common.previous' | translate }}
+        </button>
+
+        @if (currentStep() < totalSteps - 1) {
+          <button
+            type="button"
+            class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+            (click)="goNext()"
+          >
+            {{ 'common.next' | translate }}
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white transition-colors hover:enabled:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+            [disabled]="isSubmitting()"
+            (click)="submit()"
+          >
+            {{ 'wizards.newBeneficiary.submit' | translate }}
+          </button>
+        }
+      </div>
+    </form>
+  }
+</main>

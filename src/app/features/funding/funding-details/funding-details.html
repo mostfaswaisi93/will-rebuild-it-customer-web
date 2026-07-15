@@ -1,0 +1,245 @@
+<div class="relative pb-10">
+  <app-page-header [showBack]="true" [title]="headerTitle()">
+    <div pageHeaderActions>
+      @if (funding(); as f) {
+        <app-status-pill context="funding" [status]="f.status" />
+      }
+    </div>
+  </app-page-header>
+
+  <div class="relative min-h-40">
+    <app-spinner-overlay [active]="loading()" />
+
+    @if (loadError()) {
+      <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+        <p class="font-medium text-ink-900">{{ 'funding.details.loadError' | translate }}</p>
+        <button
+          type="button"
+          class="mt-3 inline-flex min-h-11 items-center rounded-card bg-brand-500 px-4 text-sm font-medium text-white hover:bg-brand-600"
+          (click)="retry()"
+        >
+          {{ 'common.retry' | translate }}
+        </button>
+      </div>
+    } @else if (funding(); as f) {
+      <div class="space-y-4 py-4">
+        <!-- Team / project card -->
+        <section class="rounded-card border border-ink-300 bg-surface p-4">
+          <h2 class="text-sm font-medium text-ink-500">{{ 'funding.details.teamProject' | translate }}</h2>
+          <dl class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <dt class="flex items-center gap-1.5 text-xs text-ink-500">
+                <svg lucideBuilding2 [size]="14"></svg>
+                {{ 'funding.details.project' | translate }}
+              </dt>
+              <dd class="mt-1">
+                <a
+                  [routerLink]="['/app/projects', f.projectId]"
+                  class="text-sm font-medium text-brand-600 hover:text-brand-700 hover:underline"
+                >
+                  {{ f.projectTitle }}
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt class="flex items-center gap-1.5 text-xs text-ink-500">
+                <svg lucideUsers [size]="14"></svg>
+                {{ 'funding.details.phase' | translate }}
+              </dt>
+              <dd class="mt-1 text-sm font-medium text-ink-900">{{ 'project.phase.' + f.phaseKey | translate }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Summary card + QR -->
+        <section class="rounded-card border border-ink-300 bg-surface p-4">
+          <h2 class="text-sm font-medium text-ink-500">{{ 'funding.details.summary' | translate }}</h2>
+          <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <dl class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <dt class="text-xs text-ink-500">{{ 'funding.details.fundingNumber' | translate }}</dt>
+                <dd class="mt-1 text-sm font-medium text-ink-900">{{ f.fundingNumber }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-ink-500">{{ 'funding.details.phase' | translate }}</dt>
+                <dd class="mt-1 text-sm font-medium text-ink-900">{{ 'project.phase.' + f.phaseKey | translate }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-ink-500">{{ 'funding.details.status' | translate }}</dt>
+                <dd class="mt-1"><app-status-pill context="funding" [status]="f.status" /></dd>
+              </div>
+              <div>
+                <dt class="text-xs text-ink-500">{{ 'funding.details.created' | translate }}</dt>
+                <dd class="mt-1 text-sm font-medium text-ink-900">{{ formatDate(f.createdAt) }}</dd>
+              </div>
+            </dl>
+            <div class="flex shrink-0 justify-center sm:justify-end">
+              <app-qr-code [value]="f.fundingNumber" [size]="120" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Funded / outstanding / refunded breakdown -->
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div class="rounded-card border border-brand-500/30 bg-brand-100 p-4">
+            <div class="flex items-center gap-2 text-brand-800">
+              <svg lucideWallet [size]="18"></svg>
+              <p class="text-xs font-medium">{{ 'funding.details.amounts.funded' | translate }}</p>
+            </div>
+            <p class="mt-2 text-xl font-semibold text-brand-800">${{ f.fundedAmount }}</p>
+          </div>
+          <div class="rounded-card border border-danger/30 bg-error-container p-4">
+            <div class="flex items-center gap-2 text-on-error-container">
+              <svg lucideCircleAlert [size]="18"></svg>
+              <p class="text-xs font-medium">{{ 'funding.details.amounts.outstanding' | translate }}</p>
+            </div>
+            <p class="mt-2 text-xl font-semibold text-on-error-container">${{ f.outstandingAmount }}</p>
+          </div>
+          <div class="rounded-card border border-info/30 bg-info/10 p-4">
+            <div class="flex items-center gap-2 text-info">
+              <svg lucideRotateCcw [size]="18"></svg>
+              <p class="text-xs font-medium">{{ 'funding.details.amounts.refunded' | translate }}</p>
+            </div>
+            <p class="mt-2 text-xl font-semibold text-info">${{ f.refundedAmount }}</p>
+          </div>
+        </div>
+
+        <!-- Disbursements ledger -->
+        <section class="rounded-card border border-ink-300 bg-surface p-4">
+          <h2 class="flex items-center gap-2 text-sm font-medium text-ink-500">
+            <svg lucideReceipt [size]="16"></svg>
+            {{ 'funding.details.disbursements.title' | translate }}
+          </h2>
+
+          @if (f.disbursements.length === 0) {
+            <p class="mt-3 text-sm text-ink-500">{{ 'funding.details.disbursements.empty' | translate }}</p>
+          } @else {
+            <!-- Table (md+) -->
+            <div class="mt-3 hidden overflow-x-auto md:block">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr class="border-b border-ink-300">
+                    <th class="px-3 py-2 text-start text-xs font-medium text-ink-500">{{ 'funding.details.disbursements.column.amount' | translate }}</th>
+                    <th class="px-3 py-2 text-start text-xs font-medium text-ink-500">{{ 'funding.details.disbursements.column.funder' | translate }}</th>
+                    <th class="px-3 py-2 text-start text-xs font-medium text-ink-500">{{ 'funding.details.disbursements.column.date' | translate }}</th>
+                    <th class="px-3 py-2 text-start text-xs font-medium text-ink-500">{{ 'funding.details.disbursements.column.receipt' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (d of f.disbursements; track d.id) {
+                    <tr class="border-b border-ink-300/60 last:border-b-0 hover:bg-surface-container-low">
+                      <td class="px-3 py-2 text-sm">
+                        <a
+                          [routerLink]="['/app/funding', f.id, 'txn', d.id]"
+                          class="inline-flex flex-wrap items-center gap-2 font-medium text-brand-600 hover:text-brand-700 hover:underline"
+                        >
+                          ${{ d.amount }}
+                          @if (d.isVoided) {
+                            <span class="rounded-full bg-ink-300/40 px-2 py-0.5 text-[11px] font-medium text-ink-700">{{ 'funding.details.disbursements.badge.voided' | translate }}</span>
+                          }
+                          @if (d.isRefunded) {
+                            <span class="rounded-full bg-info/10 px-2 py-0.5 text-[11px] font-medium text-info">{{ 'funding.details.disbursements.badge.refunded' | translate }}</span>
+                          }
+                        </a>
+                      </td>
+                      <td class="px-3 py-2 text-sm text-ink-700">{{ d.funderName }}</td>
+                      <td class="px-3 py-2 text-sm text-ink-500">{{ formatDate(d.disbursedAt) }}</td>
+                      <td class="px-3 py-2 text-sm">
+                        @if (d.receiptUrl) {
+                          <a
+                            [href]="d.receiptUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700 hover:underline"
+                          >
+                            <svg lucideExternalLink [size]="14"></svg>
+                            {{ 'funding.details.disbursements.viewReceipt' | translate }}
+                          </a>
+                        } @else {
+                          <span class="text-ink-500">—</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Cards (mobile) -->
+            <div class="mt-3 grid gap-3 md:hidden">
+              @for (d of f.disbursements; track d.id) {
+                <a
+                  [routerLink]="['/app/funding', f.id, 'txn', d.id]"
+                  class="block rounded-card border border-ink-300 bg-surface-container-low p-3 hover:border-brand-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+                >
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-base font-semibold text-ink-900">${{ d.amount }}</span>
+                    <div class="flex flex-wrap items-center justify-end gap-1.5">
+                      @if (d.isVoided) {
+                        <span class="rounded-full bg-ink-300/40 px-2 py-0.5 text-[11px] font-medium text-ink-700">{{ 'funding.details.disbursements.badge.voided' | translate }}</span>
+                      }
+                      @if (d.isRefunded) {
+                        <span class="rounded-full bg-info/10 px-2 py-0.5 text-[11px] font-medium text-info">{{ 'funding.details.disbursements.badge.refunded' | translate }}</span>
+                      }
+                    </div>
+                  </div>
+                  <dl class="mt-2 space-y-1 text-sm">
+                    <div class="flex items-center justify-between gap-3">
+                      <dt class="text-ink-500">{{ 'funding.details.disbursements.column.funder' | translate }}</dt>
+                      <dd class="text-end text-ink-700">{{ d.funderName }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                      <dt class="text-ink-500">{{ 'funding.details.disbursements.column.date' | translate }}</dt>
+                      <dd class="text-end text-ink-700">{{ formatDate(d.disbursedAt) }}</dd>
+                    </div>
+                  </dl>
+                </a>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- Confirm receipt -->
+        <section class="rounded-card border border-ink-300 bg-surface p-4">
+          <h2 class="flex items-center gap-2 text-sm font-medium text-ink-500">
+            <svg lucidePenLine [size]="16"></svg>
+            {{ 'funding.details.confirmReceipt.title' | translate }}
+          </h2>
+
+          @if (f.receiptConfirmedAt) {
+            <div class="mt-3 flex items-center gap-2 rounded-card bg-brand-100 p-3 text-sm text-brand-800">
+              <svg lucideCircleCheck [size]="18"></svg>
+              <span>{{ 'funding.details.confirmReceipt.confirmedOn' | translate: { date: formatDate(f.receiptConfirmedAt) } }}</span>
+            </div>
+          } @else {
+            <p class="mt-2 text-sm text-ink-700">{{ 'funding.details.confirmReceipt.description' | translate }}</p>
+
+            <label class="mt-3 flex items-start gap-2.5">
+              <input
+                type="checkbox"
+                class="mt-0.5 h-5 w-5 shrink-0 rounded border-ink-300 text-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+                [checked]="termsAccepted()"
+                (change)="onTermsToggle($event)"
+              />
+              <span class="text-sm text-ink-700">{{ 'funding.details.confirmReceipt.termsLabel' | translate }}</span>
+            </label>
+
+            <a
+              [routerLink]="signLink()"
+              [attr.aria-disabled]="!termsAccepted()"
+              class="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-card px-5 text-sm font-medium"
+              [class]="
+                termsAccepted()
+                  ? 'bg-brand-500 text-white hover:bg-brand-600'
+                  : 'pointer-events-none cursor-not-allowed bg-ink-300/40 text-ink-500'
+              "
+            >
+              <svg lucidePenLine [size]="16"></svg>
+              {{ 'funding.details.confirmReceipt.button' | translate }}
+            </a>
+          }
+        </section>
+      </div>
+    }
+  </div>
+</div>

@@ -31,6 +31,7 @@
     "signIn": "Sign in"
   },
   "nav": {
+    "dashboard": "Dashboard",
     "requests": "Requests",
     "projects": "Projects",
     "teams": "Teams",
@@ -58,9 +59,34 @@
     "copyright": "© {{year}} Gaza Reconstruction Platform · حنعمرها"
   },
   "content": {
-    "privacy": "Privacy policy",
-    "terms": "Terms and conditions",
-    "help": "Help & FAQ"
+    "privacy": {
+      "title": "Privacy policy"
+    },
+    "terms": {
+      "title": "Terms of service"
+    },
+    "help": {
+      "title": "Help & FAQ",
+      "subtitle": "Answers to the questions we hear most",
+      "faq": {
+        "q1": "How do I request a damage assessment for my property?",
+        "a1": "From the home screen, choose New request and select a damage assessment. Add your property details, its location, and a short description. A reconstruction team will review your request and arrange a visit.",
+        "q2": "Who reviews the cost estimate for my project, and how do I approve it?",
+        "a2": "After a team surveys your property, they prepare an itemised cost estimate. You will be notified to review the breakdown, and you can approve it with your signature or ask for changes before any work begins.",
+        "q3": "How is the reconstruction of my property funded?",
+        "a3": "Approved projects are shared with donors who contribute toward the required amount. You can follow the funding progress for each phase, and funds are released to the team as milestones are confirmed.",
+        "q4": "How do I follow the progress of my reconstruction?",
+        "a4": "Open your project to see its current phase, completion percentage, and progress photos. You will also receive a notification each time your team records a new milestone.",
+        "q5": "What can I do if I have a concern about my reconstruction team?",
+        "a5": "You can raise a complaint from your project page, describing the matter and selecting the relevant reasons. Our support staff will review it and follow up with you.",
+        "q6": "How do I confirm that I received funds or that work was completed?",
+        "a6": "When a disbursement or a handover is ready, you will be asked to confirm receipt and sign. This keeps a clear, transparent record for you, your team, and the donors."
+      },
+      "contact": {
+        "title": "Still need help?",
+        "intro": "You can reach our support team directly."
+      }
+    }
   },
   "public": {
     "home": {
@@ -419,6 +445,525 @@
       "once": "One-time",
       "monthly": "Monthly",
       "donate": "Donate"
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Review and update your personal details.",
+    "personalInfo": "Personal information",
+    "edit": "Edit",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone number",
+    "contactLocked": "Contact the support team to change your phone number.",
+    "email": "Email address",
+    "propertyAddress": "Property address",
+    "familySize": "Family size",
+    "familySizeError": "Please enter a valid family size.",
+    "saved": "Your profile has been updated.",
+    "idLabel": "Beneficiary ID",
+    "qrHint": "Show this code so reconstruction teams can confirm your identity.",
+    "changePasswordButton": "Change password",
+    "changePassword": {
+      "title": "Change password",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "weak": "Password does not meet the requirements.",
+      "mismatch": "The two passwords do not match.",
+      "saved": "Your password has been changed."
+    }
+  },
+  "account": {
+    "title": "Account settings",
+    "subtitle": "Manage your data, sharing and notification preferences.",
+    "tabs": {
+      "data": "Data & sharing",
+      "notifications": "Notifications"
+    },
+    "data": {
+      "title": "Your data",
+      "description": "You decide how your information is used across the platform.",
+      "pointVisibility": "Your profile details are visible only to teams assigned to your projects.",
+      "pointSharing": "Your identity is never shared with donors unless you choose to.",
+      "pointRetention": "You may request a copy of your data or ask for it to be removed at any time."
+    },
+    "dangerZone": {
+      "title": "Danger zone"
+    },
+    "deactivate": {
+      "description": "Deactivating your account pauses your projects and hides your profile. You can reach out to support to restore it later.",
+      "button": "Deactivate account",
+      "confirmTitle": "Deactivate account?",
+      "confirmBody": "Your projects will be paused and your profile hidden until you restore the account. Would you like to continue?",
+      "confirmButton": "Deactivate",
+      "done": "Your deactivation request has been received."
+    },
+    "notifications": {
+      "title": "Notification preferences",
+      "description": "Choose which updates you would like to receive.",
+      "projectUpdates": "Project updates",
+      "projectUpdatesDesc": "Progress on your reconstruction phases and milestones.",
+      "fundingUpdates": "Funding updates",
+      "fundingUpdatesDesc": "Changes to funding status and disbursements for your projects.",
+      "teamMessages": "Team messages",
+      "teamMessagesDesc": "Messages from the teams working on your projects.",
+      "donationReceipts": "Donation receipts",
+      "donationReceiptsDesc": "Confirmations for donations linked to your projects.",
+      "saved": "Your notification preferences have been saved."
+    }
+  },
+  "complaints": {
+    "list": {
+      "title": "My complaints",
+      "subtitle": "{{count}} complaints in total",
+      "statusFilter": "Filter by status",
+      "allStatuses": "All statuses",
+      "emptyHint": "You haven't filed any complaints yet."
+    },
+    "reason": {
+      "delay": "Delays",
+      "poorQuality": "Poor quality of work",
+      "specificationMismatch": "Work does not match specifications",
+      "misconduct": "Unprofessional conduct",
+      "otherReason": "Other"
+    },
+    "form": {
+      "title": "File a complaint",
+      "teamLabel": "Team",
+      "projectLabel": "Related project (optional)",
+      "projectNone": "Not related to a specific project",
+      "reasonsLabel": "Reasons",
+      "reasonsHint": "Select all that apply.",
+      "reasonsRequired": "Please select at least one reason.",
+      "otherDetailLabel": "Please specify",
+      "otherDetailPlaceholder": "Tell us a little more",
+      "otherDetailRequired": "Please add a short note for the other reason.",
+      "descriptionLabel": "What happened?",
+      "descriptionPlaceholder": "Describe the issue in your own words",
+      "descriptionRequired": "Please describe the issue.",
+      "attachmentsLabel": "Photos (optional)",
+      "submit": "Submit complaint",
+      "loadError": "We couldn't load the team details."
+    },
+    "view": {
+      "team": "Team",
+      "createdAt": "Filed on",
+      "reasons": "Reasons",
+      "description": "Description",
+      "response": {
+        "title": "Response"
+      },
+      "loadError": "We couldn't load this complaint.",
+      "notFound": "This complaint could not be found."
+    },
+    "thanks": {
+      "title": "Thank you",
+      "body": "Your complaint has been received. Our team will review it and follow up with you."
+    }
+  },
+  "dashboard": {
+    "greeting": "Welcome back, {{name}}",
+    "greetingGeneric": "Welcome back",
+    "subtitle": "An overview of your reconstruction journey",
+    "stats": {
+      "activeProjects": "Active projects",
+      "openRequests": "Open requests",
+      "deliveredProjects": "Projects delivered"
+    },
+    "quickLinks": {
+      "newRequest": "New request",
+      "browseTeams": "Browse teams",
+      "estimates": "Estimates"
+    },
+    "recentProjects": {
+      "title": "Recent projects",
+      "empty": "No projects yet"
+    },
+    "recentRequests": {
+      "title": "Recent requests",
+      "empty": "No requests yet"
+    }
+  },
+  "donations": {
+    "general": {
+      "fund": "General fund"
+    },
+    "frequency": {
+      "once": "One-time",
+      "monthly": "Monthly"
+    },
+    "list": {
+      "title": "My donations",
+      "subtitle": "Thank you for supporting families rebuilding their homes.",
+      "newDonation": "New donation",
+      "allStatuses": "All statuses",
+      "receipt": "View receipt",
+      "summary": {
+        "totalDonated": "Total donated",
+        "projectsSupported": "Projects supported",
+        "donationsCount": "Donations"
+      },
+      "empty": {
+        "title": "No donations yet",
+        "body": "Your contributions will appear here once you make your first donation."
+      }
+    },
+    "donate": {
+      "title": "Make a donation",
+      "subtitle": "Every contribution helps a family return home.",
+      "amountLabel": "Choose an amount",
+      "customAmountLabel": "Or enter a custom amount",
+      "amountError": "Please enter an amount of at least $1.",
+      "frequencyLabel": "Frequency",
+      "nameLabel": "Your name",
+      "emailLabel": "Email address",
+      "emailError": "Please enter a valid email address.",
+      "anonymousLabel": "Donate anonymously",
+      "paymentNote": "Card payment will be added in a later phase. For now, this records your donation intent.",
+      "submit": "Donate",
+      "success": "Thank you for your donation.",
+      "thankYou": {
+        "title": "Thank you for your generosity",
+        "body": "Your donation of {{amount}} has been recorded.",
+        "qrHint": "Keep this code as a reference for your donation.",
+        "viewDonation": "View donation"
+      }
+    },
+    "detail": {
+      "title": "Donation details",
+      "loadError": "We couldn't load this donation.",
+      "amount": "Amount",
+      "frequency": "Frequency",
+      "status": "Status",
+      "donor": "Donor",
+      "anonymous": "Anonymous",
+      "date": "Date",
+      "project": "Supported project",
+      "viewProject": "View project",
+      "downloadReceipt": "Download receipt",
+      "receiptComingSoon": "Receipt download will be available soon.",
+      "reference": "Donation reference"
+    }
+  },
+  "estimates": {
+    "list": {
+      "title": "Cost estimates",
+      "subtitle": "{{count}} estimates",
+      "searchPlaceholder": "Search by estimate or project",
+      "allStatuses": "All statuses",
+      "column": {
+        "estimateNumber": "Estimate",
+        "project": "Project",
+        "team": "Team",
+        "total": "Total",
+        "status": "Status",
+        "created": "Created"
+      }
+    },
+    "view": {
+      "notFound": "This estimate could not be found.",
+      "teamTitle": "Reconstruction team",
+      "summaryTitle": "Estimate summary",
+      "estimateNumberLabel": "Estimate number",
+      "createdAtLabel": "Created on",
+      "statusLabel": "Status",
+      "boqTitle": "Bill of quantities",
+      "category": {
+        "materials": "Materials",
+        "labor": "Labor",
+        "equipment": "Equipment",
+        "custom": "Other items"
+      },
+      "boq": {
+        "description": "Description",
+        "quantity": "Quantity",
+        "unitCost": "Unit cost",
+        "lineTotal": "Line total"
+      },
+      "calc": {
+        "title": "Cost summary",
+        "subtotal": "Subtotal",
+        "discounts": "Discount",
+        "tax": "Tax",
+        "total": "Total",
+        "fundingRequired": "Funding required",
+        "fundedAmount": "Funded so far"
+      },
+      "decision": {
+        "title": "Review and respond",
+        "intro": "Please review the estimate above. To approve it, confirm the terms and add your signature.",
+        "termsLabel": "I have reviewed this estimate and agree to the scope and costs described above.",
+        "signatureLabel": "Your signature",
+        "signatureCaptured": "Signature captured.",
+        "approveHint": "Confirm the terms and capture your signature to approve this estimate.",
+        "approve": "Approve estimate",
+        "reject": "Reject"
+      },
+      "approvedTitle": "This estimate has been approved.",
+      "approvedAtLabel": "Approved on {{date}}",
+      "rejectedTitle": "This estimate was rejected.",
+      "rejectionReasonLabel": "Reason",
+      "approveSuccess": "Estimate approved.",
+      "rejectSuccess": "Estimate rejected."
+    },
+    "reject": {
+      "title": "Reject this estimate?",
+      "body": "The reconstruction team will be notified and may prepare a revised estimate. You can review any new estimate when it arrives.",
+      "confirm": "Reject estimate"
+    }
+  },
+  "funding": {
+    "list": {
+      "title": "Funding",
+      "subtitle": "Funding raised for your reconstruction projects",
+      "searchPlaceholder": "Search by funding number or project",
+      "allStatuses": "All statuses",
+      "column": {
+        "fundingNumber": "Funding #",
+        "project": "Project",
+        "phase": "Phase",
+        "fundedAmount": "Funded amount",
+        "status": "Status",
+        "created": "Created"
+      }
+    },
+    "details": {
+      "loadError": "We couldn't load this funding record. Please try again.",
+      "teamProject": "Project and team",
+      "project": "Project",
+      "phase": "Phase",
+      "summary": "Summary",
+      "fundingNumber": "Funding number",
+      "status": "Status",
+      "created": "Created",
+      "amounts": {
+        "funded": "Funded amount",
+        "outstanding": "Outstanding amount",
+        "refunded": "Refunded amount"
+      },
+      "disbursements": {
+        "title": "Disbursements",
+        "empty": "No disbursements have been recorded yet.",
+        "viewReceipt": "View receipt",
+        "column": {
+          "amount": "Amount",
+          "funder": "Funder",
+          "date": "Date",
+          "receipt": "Receipt"
+        },
+        "badge": {
+          "voided": "Voided",
+          "refunded": "Refunded"
+        }
+      },
+      "confirmReceipt": {
+        "title": "Confirm receipt",
+        "description": "Once the funds for this phase have reached you, please confirm receipt so the project can move forward.",
+        "termsLabel": "I confirm that I have received these funds and agree to the terms of handover.",
+        "button": "Confirm receipt",
+        "confirmedOn": "Receipt confirmed on {{date}}."
+      }
+    },
+    "signature": {
+      "title": "Confirm receipt and handover",
+      "instructions": "Please provide your signature below to confirm that you have received the funds for this phase.",
+      "success": "Thank you. Your receipt has been confirmed."
+    },
+    "txn": {
+      "title": "Transaction details",
+      "loadError": "We couldn't load this transaction. Please try again.",
+      "notFound": "This transaction could not be found.",
+      "mode": {
+        "normal": "Completed disbursement",
+        "voided": "Voided disbursement",
+        "refunded": "Refunded disbursement"
+      },
+      "details": {
+        "title": "Details",
+        "amount": "Amount",
+        "funder": "Funder",
+        "date": "Date",
+        "receipt": "Receipt"
+      },
+      "viewReceipt": "View receipt",
+      "notes": {
+        "title": "Notes",
+        "normal": "This disbursement was completed successfully.",
+        "voided": "This disbursement was voided and no funds were transferred.",
+        "refunded": "This disbursement was refunded to the funder."
+      }
+    }
+  },
+  "notifications": {
+    "list": {
+      "title": "Notifications",
+      "subtitle": "Updates on your projects, funding, and requests",
+      "markAllRead": "Mark all as read",
+      "delete": "Delete notification",
+      "unread": "Unread",
+      "removed": "Notification removed",
+      "empty": "You have no notifications yet"
+    }
+  },
+  "support": {
+    "list": {
+      "title": "Support requests",
+      "subtitle": "{{count}} requests",
+      "newRequest": "New request",
+      "searchPlaceholder": "Search support requests",
+      "statusFilter": "Filter by status",
+      "allStatuses": "All statuses",
+      "empty": "No support requests yet",
+      "emptyHint": "When you need help with a project, open a support request and our team will respond."
+    },
+    "form": {
+      "title": "New support request",
+      "subtitle": "Tell us how we can help",
+      "project": "Related project",
+      "projectPlaceholder": "Select a project",
+      "noProjects": "You have no projects yet, so there is nothing to link a request to.",
+      "loadProjectsError": "We couldn't load your projects. Please try again.",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief summary of your request",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe what you need help with",
+      "submit": "Submit request",
+      "success": "Your support request has been submitted."
+    },
+    "view": {
+      "conversation": "Conversation",
+      "originalRequest": "Original request",
+      "you": "You",
+      "supportTeam": "Support team",
+      "replyLabel": "Your reply",
+      "replyPlaceholder": "Write a reply",
+      "send": "Send",
+      "closedNotice": "This request is closed. Thank you for reaching out.",
+      "noMessages": "No messages yet.",
+      "replySuccess": "Your reply has been sent.",
+      "notFound": "Support request not found",
+      "notFoundHint": "This support request may have been removed, or the link is incorrect.",
+      "loadError": "We couldn't load this support request."
+    }
+  },
+  "wizards": {
+    "common": {
+      "stepOf": "Step {{current}} of {{total}}"
+    },
+    "request": {
+      "title": "New reconstruction request",
+      "subtitleToTeam": "Request to {{team}}",
+      "steps": {
+        "details": "Damage details",
+        "confirm": "Review and confirm"
+      },
+      "fields": {
+        "location": "Property location",
+        "propertyType": "Property type",
+        "severity": "Damage severity",
+        "description": "Describe the damage",
+        "descriptionPlaceholder": "Tell the team what happened and what needs rebuilding.",
+        "photos": "Photos (optional)",
+        "consent": "I agree to share this information with the reconstruction team so they can review my request."
+      },
+      "errors": {
+        "location": "Please choose the governorate and district."
+      },
+      "summary": {
+        "title": "Please review your request before submitting.",
+        "team": "Assigned team",
+        "propertyType": "Property type",
+        "severity": "Damage severity",
+        "location": "Location",
+        "description": "Description",
+        "photos": "Photos",
+        "photosCount": "{{count}} photo(s) attached"
+      },
+      "submit": "Submit request",
+      "submitSuccess": "Your request has been submitted."
+    },
+    "assessment": {
+      "title": "Damage self-assessment",
+      "subtitle": "Answer a few questions so we can understand your situation.",
+      "steps": {
+        "details": "Additional details"
+      },
+      "loadError": "We could not load the assessment right now. Please try again.",
+      "questionRequired": "Please choose an answer to continue.",
+      "selectPlaceholder": "Choose an option",
+      "fields": {
+        "description": "Describe the damage",
+        "descriptionPlaceholder": "Share any details that help us understand what happened.",
+        "photos": "Photos (optional)",
+        "location": "Property location",
+        "consent": "I agree to share this information so my request can be reviewed."
+      },
+      "errors": {
+        "location": "Please choose the governorate and district."
+      },
+      "submit": "Submit assessment",
+      "submitSuccess": "Your assessment has been submitted.",
+      "confirm": {
+        "title": "Assessment submitted",
+        "body": "Thank you. Your request has been recorded and will be reviewed shortly.",
+        "requestNumber": "Request number",
+        "viewRequest": "View request"
+      }
+    },
+    "newBeneficiary": {
+      "title": "Create your account",
+      "subtitle": "Report the damage and set up your account in a few simple steps.",
+      "steps": {
+        "contact": "Your details",
+        "verify": "Verify your email",
+        "password": "Set a password",
+        "confirm": "Review and submit"
+      },
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email address",
+        "phone": "Phone number",
+        "propertyType": "Property type",
+        "severity": "Damage severity",
+        "location": "Property location",
+        "description": "Describe the damage",
+        "descriptionPlaceholder": "Tell us what happened and what needs rebuilding.",
+        "photos": "Photos (optional)",
+        "consent": "I agree to share this information so my request can be reviewed.",
+        "password": "Password",
+        "confirmPassword": "Confirm password"
+      },
+      "verify": {
+        "body": "We sent a 6-digit code to your email. Enter it below to continue.",
+        "resent": "A new code has been sent.",
+        "invalid": "Please enter the 6-digit code."
+      },
+      "errors": {
+        "email": "Please enter a valid email address.",
+        "phone": "Please enter a valid phone number.",
+        "location": "Please choose the governorate and district.",
+        "passwordMismatch": "The passwords do not match."
+      },
+      "summary": {
+        "title": "Please review your details before submitting.",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "propertyType": "Property type",
+        "severity": "Damage severity",
+        "location": "Location",
+        "description": "Description"
+      },
+      "submit": "Submit",
+      "submitSuccess": "Your request has been submitted.",
+      "confirm": {
+        "title": "Request submitted",
+        "body": "Thank you. Your request has been received and will be reviewed shortly.",
+        "requestNumber": "Request number",
+        "signIn": "Sign in to your account"
+      }
     }
   }
 }

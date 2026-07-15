@@ -1,0 +1,77 @@
+<app-page-header
+  [title]="'support.form.title' | translate"
+  [subtitle]="'support.form.subtitle' | translate"
+  [showBack]="true"
+/>
+
+<div class="relative mt-2 max-w-2xl">
+  <app-spinner-overlay [active]="submitting()" />
+
+  <form [formGroup]="form" class="space-y-5" (ngSubmit)="submit()">
+    <div class="space-y-1.5">
+      <label for="supportProject" class="text-sm font-medium text-ink-900">
+        {{ 'support.form.project' | translate }}
+      </label>
+      <select
+        id="supportProject"
+        formControlName="projectId"
+        class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+      >
+        <option value="" disabled>{{ 'support.form.projectPlaceholder' | translate }}</option>
+        @for (project of projects(); track project.id) {
+          <option [value]="project.id">{{ project.title }}</option>
+        }
+      </select>
+      @if (projectsError()) {
+        <p class="text-sm text-danger">{{ 'support.form.loadProjectsError' | translate }}</p>
+      } @else if (!projectsLoading() && projects().length === 0) {
+        <p class="text-sm text-ink-500">{{ 'support.form.noProjects' | translate }}</p>
+      }
+      @if (form.controls.projectId.touched && form.controls.projectId.invalid) {
+        <p class="text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label for="supportSubject" class="text-sm font-medium text-ink-900">
+        {{ 'support.form.subject' | translate }}
+      </label>
+      <input
+        id="supportSubject"
+        type="text"
+        formControlName="subject"
+        class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+        [placeholder]="'support.form.subjectPlaceholder' | translate"
+      />
+      @if (form.controls.subject.touched && form.controls.subject.invalid) {
+        <p class="text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label for="supportDescription" class="text-sm font-medium text-ink-900">
+        {{ 'support.form.description' | translate }}
+      </label>
+      <textarea
+        id="supportDescription"
+        formControlName="description"
+        rows="5"
+        class="w-full rounded-card border border-ink-300 bg-surface-container-low px-3 py-2 text-base text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+        [placeholder]="'support.form.descriptionPlaceholder' | translate"
+      ></textarea>
+      @if (form.controls.description.touched && form.controls.description.invalid) {
+        <p class="text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+      }
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        type="submit"
+        class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-5 py-2 text-sm font-medium text-white hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="form.invalid || submitting()"
+      >
+        {{ 'support.form.submit' | translate }}
+      </button>
+    </div>
+  </form>
+</div>

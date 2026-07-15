@@ -24,6 +24,7 @@ interface NavItem {
 }
 
 const BENEFICIARY_NAV: NavItem[] = [
+  { labelKey: 'nav.dashboard', path: '/app/dashboard', icon: LucideLayoutDashboard },
   { labelKey: 'nav.requests', path: '/app/requests', icon: LucideFileText },
   { labelKey: 'nav.projects', path: '/app/projects', icon: LucideBuilding2 },
   { labelKey: 'nav.teams', path: '/app/teams', icon: LucideUsers },

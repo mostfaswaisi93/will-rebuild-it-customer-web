@@ -1,0 +1,25 @@
+<app-page-header [showBack]="true" [title]="'content.privacy.title' | translate" />
+
+<div class="mx-auto max-w-3xl">
+  @if (isLoading()) {
+    <div class="flex justify-center py-16">
+      <app-spinner [size]="28" />
+    </div>
+  } @else if (hasError()) {
+    <div class="flex flex-col items-center gap-4 rounded-card border border-dashed border-ink-300 bg-surface px-6 py-16 text-center">
+      <p class="text-sm text-ink-500">{{ 'common.errorGeneric' | translate }}</p>
+      <button
+        type="button"
+        class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-5 text-sm font-medium text-white hover:bg-brand-600"
+        (click)="retry()"
+      >
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else if (settings(); as data) {
+    <article
+      class="content-body rounded-card border border-ink-300 bg-surface p-5 sm:p-6"
+      [innerHTML]="data.privacyBody"
+    ></article>
+  }
+</div>

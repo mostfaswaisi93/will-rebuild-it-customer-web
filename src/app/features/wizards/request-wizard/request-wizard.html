@@ -1,0 +1,165 @@
+<app-page-header
+  [title]="'wizards.request.title' | translate"
+  [subtitle]="team() ? ('wizards.request.subtitleToTeam' | translate: { team: team()!.name }) : undefined"
+  [showBack]="true"
+/>
+
+<div class="relative mx-auto mt-4 max-w-2xl">
+  <app-spinner-overlay [active]="isSubmitting()" />
+
+  <app-wizard-stepper
+    [stepNumber]="currentStep() + 1"
+    [totalSteps]="totalSteps"
+    [title]="stepTitleKey() | translate"
+  />
+
+  <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+    @if (currentStep() === 0) {
+      <div class="flex flex-col gap-6 rounded-card bg-surface p-5 shadow-card sm:p-6">
+        <div>
+          <span class="mb-2 block text-sm font-medium text-ink-700">
+            {{ 'wizards.request.fields.location' | translate }}
+          </span>
+          <app-address-picker formControlName="address" />
+          @if (form.controls.address.touched && form.controls.address.invalid) {
+            <p class="mt-1 text-sm text-danger">{{ 'wizards.request.errors.location' | translate }}</p>
+          }
+        </div>
+
+        <div>
+          <app-damage-category-select
+            formControlName="propertyType"
+            [labelKey]="'wizards.request.fields.propertyType'"
+          />
+          @if (form.controls.propertyType.touched && form.controls.propertyType.invalid) {
+            <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+          }
+        </div>
+
+        <div>
+          <app-severity-select formControlName="severity" [labelKey]="'wizards.request.fields.severity'" />
+          @if (form.controls.severity.touched && form.controls.severity.invalid) {
+            <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="request-description" class="mb-1 block text-sm font-medium text-ink-700">
+            {{ 'wizards.request.fields.description' | translate }}
+          </label>
+          <textarea
+            id="request-description"
+            formControlName="description"
+            rows="4"
+            [placeholder]="'wizards.request.fields.descriptionPlaceholder' | translate"
+            class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 py-2 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+          ></textarea>
+          @if (form.controls.description.touched && form.controls.description.invalid) {
+            <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+          }
+        </div>
+
+        <div>
+          <span class="mb-2 block text-sm font-medium text-ink-700">
+            {{ 'wizards.request.fields.photos' | translate }}
+          </span>
+          <app-file-uploader [files]="photos()" (filesChange)="photos.set($event)" />
+        </div>
+
+        <label class="flex items-start gap-3">
+          <input
+            type="checkbox"
+            formControlName="consent"
+            class="mt-0.5 h-5 w-5 shrink-0 rounded border-ink-300 text-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+          />
+          <span class="text-sm text-ink-700">{{ 'wizards.request.fields.consent' | translate }}</span>
+        </label>
+        @if (form.controls.consent.touched && form.controls.consent.invalid) {
+          <p class="-mt-3 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+        }
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+          (click)="goNext()"
+        >
+          {{ 'common.next' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (currentStep() === 1) {
+      <div class="flex flex-col gap-4 rounded-card bg-surface p-5 shadow-card sm:p-6">
+        <p class="text-sm text-ink-500">{{ 'wizards.request.summary.title' | translate }}</p>
+
+        <dl class="divide-y divide-ink-300/60">
+          @if (team(); as t) {
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.request.summary.team' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">{{ t.name }}</dd>
+            </div>
+          }
+          <div class="flex justify-between gap-4 py-3">
+            <dt class="text-sm text-ink-500">{{ 'wizards.request.summary.propertyType' | translate }}</dt>
+            <dd class="text-end text-sm font-medium text-ink-900">
+              @if (form.controls.propertyType.value; as pt) {
+                {{ 'master.propertyType.' + pt | translate }}
+              }
+            </dd>
+          </div>
+          <div class="flex justify-between gap-4 py-3">
+            <dt class="text-sm text-ink-500">{{ 'wizards.request.summary.severity' | translate }}</dt>
+            <dd class="text-end text-sm font-medium text-ink-900">
+              @if (form.controls.severity.value; as sv) {
+                {{ 'master.severity.' + sv | translate }}
+              }
+            </dd>
+          </div>
+          <div class="flex justify-between gap-4 py-3">
+            <dt class="text-sm text-ink-500">{{ 'wizards.request.summary.location' | translate }}</dt>
+            <dd class="text-end text-sm font-medium text-ink-900">
+              @if (form.controls.address.value; as addr) {
+                {{ 'master.governorate.' + addr.governorate | translate }}
+                @if (addr.district) {
+                  <span class="text-ink-500">·</span> {{ addr.district }}
+                }
+              }
+            </dd>
+          </div>
+          <div class="py-3">
+            <dt class="mb-1 text-sm text-ink-500">{{ 'wizards.request.summary.description' | translate }}</dt>
+            <dd class="whitespace-pre-line text-sm text-ink-700">{{ form.controls.description.value }}</dd>
+          </div>
+          @if (photos().length > 0) {
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-sm text-ink-500">{{ 'wizards.request.summary.photos' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">
+                {{ 'wizards.request.summary.photosCount' | translate: { count: photos().length } }}
+              </dd>
+            </div>
+          }
+        </dl>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-card border border-outline px-5 text-sm font-medium text-ink-700 hover:bg-surface-container-low"
+          (click)="goBack()"
+        >
+          {{ 'common.previous' | translate }}
+        </button>
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white transition-colors hover:enabled:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="isSubmitting()"
+          (click)="submit()"
+        >
+          {{ 'wizards.request.submit' | translate }}
+        </button>
+      </div>
+    }
+  </form>
+</div>

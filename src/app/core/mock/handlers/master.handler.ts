@@ -13,5 +13,9 @@ export const handleMaster: MockHandler = (ctx) => {
     return ok(ctx.store.globalSettings);
   }
 
+  if (ctx.segments[1] === 'assessment-questions') {
+    return ok(ctx.store.assessmentQuestions);
+  }
+
   return undefined;
 };

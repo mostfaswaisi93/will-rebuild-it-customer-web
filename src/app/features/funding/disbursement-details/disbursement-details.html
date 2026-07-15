@@ -1,0 +1,112 @@
+<div class="relative pb-10">
+  <app-page-header [showBack]="true" [title]="'funding.txn.title' | translate" />
+
+  <div class="relative min-h-40">
+    <app-spinner-overlay [active]="loading()" />
+
+    @if (loadError()) {
+      <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+        <p class="font-medium text-ink-900">{{ 'funding.txn.loadError' | translate }}</p>
+        <button
+          type="button"
+          class="mt-3 inline-flex min-h-11 items-center rounded-card bg-brand-500 px-4 text-sm font-medium text-white hover:bg-brand-600"
+          (click)="retry()"
+        >
+          {{ 'common.retry' | translate }}
+        </button>
+      </div>
+    } @else if (disbursement(); as d) {
+      <div class="space-y-4 py-4">
+        <!-- Adaptive header banner -->
+        @switch (mode()) {
+          @case ('voided') {
+            <div class="flex items-center gap-3 rounded-card border border-ink-300 bg-ink-300/20 p-4">
+              <svg lucideBan [size]="22" class="shrink-0 text-ink-700"></svg>
+              <div>
+                <p class="text-sm font-semibold text-ink-900">{{ 'funding.txn.mode.voided' | translate }}</p>
+                <p class="text-sm text-ink-500">{{ 'funding.txn.notes.voided' | translate }}</p>
+              </div>
+            </div>
+          }
+          @case ('refunded') {
+            <div class="flex items-center gap-3 rounded-card border border-info/30 bg-info/10 p-4">
+              <svg lucideRotateCcw [size]="22" class="shrink-0 text-info"></svg>
+              <div>
+                <p class="text-sm font-semibold text-info">{{ 'funding.txn.mode.refunded' | translate }}</p>
+                <p class="text-sm text-ink-500">{{ 'funding.txn.notes.refunded' | translate }}</p>
+              </div>
+            </div>
+          }
+          @default {
+            <div class="flex items-center gap-3 rounded-card border border-brand-500/30 bg-brand-100 p-4">
+              <svg lucideCircleCheck [size]="22" class="shrink-0 text-brand-800"></svg>
+              <div>
+                <p class="text-sm font-semibold text-brand-800">{{ 'funding.txn.mode.normal' | translate }}</p>
+                <p class="text-sm text-ink-500">{{ 'funding.txn.notes.normal' | translate }}</p>
+              </div>
+            </div>
+          }
+        }
+
+        <!-- Details table -->
+        <section class="rounded-card border border-ink-300 bg-surface p-4">
+          <h2 class="text-sm font-medium text-ink-500">{{ 'funding.txn.details.title' | translate }}</h2>
+          <dl class="mt-3 divide-y divide-ink-300/60">
+            <div class="flex items-center justify-between gap-3 py-2.5">
+              <dt class="text-sm text-ink-500">{{ 'funding.txn.details.amount' | translate }}</dt>
+              <dd class="text-end text-sm font-semibold text-ink-900">${{ d.amount }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3 py-2.5">
+              <dt class="text-sm text-ink-500">{{ 'funding.txn.details.funder' | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">{{ d.funderName }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3 py-2.5">
+              <dt class="text-sm text-ink-500">{{ 'funding.txn.details.date' | translate }}</dt>
+              <dd class="text-end text-sm text-ink-700">{{ formatDate(d.disbursedAt) }}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3 py-2.5">
+              <dt class="text-sm text-ink-500">{{ 'funding.txn.details.receipt' | translate }}</dt>
+              <dd class="text-end text-sm">
+                @if (d.receiptUrl) {
+                  <a
+                    [href]="d.receiptUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 font-medium text-brand-600 hover:text-brand-700 hover:underline"
+                  >
+                    <svg lucideExternalLink [size]="14"></svg>
+                    {{ 'funding.txn.viewReceipt' | translate }}
+                  </a>
+                } @else {
+                  <span class="text-ink-500">—</span>
+                }
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Notes card -->
+        <section class="rounded-card border border-ink-300 bg-surface p-4">
+          <h2 class="text-sm font-medium text-ink-500">{{ 'funding.txn.notes.title' | translate }}</h2>
+          <p class="mt-2 text-sm text-ink-700">
+            @switch (mode()) {
+              @case ('voided') {
+                {{ 'funding.txn.notes.voided' | translate }}
+              }
+              @case ('refunded') {
+                {{ 'funding.txn.notes.refunded' | translate }}
+              }
+              @default {
+                {{ 'funding.txn.notes.normal' | translate }}
+              }
+            }
+          </p>
+        </section>
+      </div>
+    } @else {
+      <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center text-ink-500">
+        {{ 'funding.txn.notFound' | translate }}
+      </div>
+    }
+  </div>
+</div>

@@ -10,8 +10,28 @@ import { handleMaster } from '../mock/handlers/master.handler';
 import { handleRequests } from '../mock/handlers/requests.handler';
 import { handleProjects } from '../mock/handlers/projects.handler';
 import { handleTeams } from '../mock/handlers/teams.handler';
+import { handleEstimates } from '../mock/handlers/estimates.handler';
+import { handleFunding } from '../mock/handlers/funding.handler';
+import { handleDonations } from '../mock/handlers/donations.handler';
+import { handleSupport } from '../mock/handlers/support.handler';
+import { handleComplaints } from '../mock/handlers/complaints.handler';
+import { handleNotifications } from '../mock/handlers/notifications.handler';
+import { handleProfile } from '../mock/handlers/profile.handler';
 
-const handlers = [handleAuth, handleMaster, handleRequests, handleProjects, handleTeams];
+const handlers = [
+  handleAuth,
+  handleMaster,
+  handleRequests,
+  handleProjects,
+  handleTeams,
+  handleEstimates,
+  handleFunding,
+  handleDonations,
+  handleSupport,
+  handleComplaints,
+  handleNotifications,
+  handleProfile,
+];
 
 /**
  * Stands in for a real backend. Never calls `next()`, so it short-circuits

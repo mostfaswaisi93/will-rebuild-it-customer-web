@@ -1,0 +1,59 @@
+<div>
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h3 class="text-base font-semibold text-ink-900">{{ 'account.notifications.title' | translate }}</h3>
+      <p class="mt-1 text-sm text-ink-500">{{ 'account.notifications.description' | translate }}</p>
+    </div>
+    @if (saving()) {
+      <span class="inline-flex items-center gap-1.5 text-xs text-ink-500">
+        <app-spinner [size]="16" />
+        {{ 'common.loading' | translate }}
+      </span>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="mt-4 flex items-center justify-center rounded-card border border-ink-300 bg-surface p-8">
+      <app-spinner [size]="24" />
+    </div>
+  } @else if (loadError()) {
+    <div class="mt-4 rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+      <p class="text-ink-500">{{ 'common.errorGeneric' | translate }}</p>
+      <button
+        type="button"
+        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-card border border-outline px-4 py-2 text-sm font-medium text-ink-700 hover:bg-surface-container-low"
+        (click)="retry()"
+      >
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else {
+    <form
+      [formGroup]="form"
+      class="mt-4 divide-y divide-outline-variant overflow-hidden rounded-card border border-ink-300 bg-surface"
+    >
+      @for (toggle of toggles; track toggle.key) {
+        <label class="flex min-h-11 cursor-pointer items-center justify-between gap-4 px-4 py-4">
+          <span class="min-w-0">
+            <span class="block text-sm font-medium text-ink-900">{{ toggle.labelKey | translate }}</span>
+            <span class="mt-0.5 block text-sm text-ink-500">{{ toggle.descKey | translate }}</span>
+          </span>
+          <span class="relative inline-flex h-6 w-11 shrink-0 items-center">
+            <input
+              type="checkbox"
+              role="switch"
+              [formControlName]="toggle.key"
+              class="peer sr-only"
+            />
+            <span
+              class="pointer-events-none block h-6 w-11 rounded-full bg-ink-300 transition-colors peer-checked:bg-brand-500 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-500/40"
+            ></span>
+            <span
+              class="pointer-events-none absolute inset-s-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ltr:peer-checked:translate-x-5 rtl:peer-checked:-translate-x-5"
+            ></span>
+          </span>
+        </label>
+      }
+    </form>
+  }
+</div>

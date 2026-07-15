@@ -1,0 +1,222 @@
+<div class="relative pb-10">
+  <app-spinner-overlay [active]="loading()" />
+
+  @if (loadError()) {
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+      <p class="text-sm text-ink-500">{{ 'common.errorGeneric' | translate }}</p>
+      <button
+        type="button"
+        class="mt-3 inline-flex min-h-11 items-center justify-center rounded-card border border-outline px-4 text-sm font-medium text-ink-700 hover:bg-surface-container-low"
+        (click)="reload()"
+      >
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else if (estimate(); as est) {
+    <app-page-header [showBack]="true" [title]="est.estimateNumber" [subtitle]="est.projectTitle">
+      <div pageHeaderActions>
+        <app-status-pill context="estimate" [status]="est.status" />
+      </div>
+    </app-page-header>
+
+    <div class="mt-4 grid gap-6 lg:grid-cols-3">
+      <!-- Team card -->
+      <section class="rounded-card border border-ink-300 bg-surface p-4 sm:p-5">
+        <h2 class="text-sm font-semibold text-ink-500">{{ 'estimates.view.teamTitle' | translate }}</h2>
+        <div class="mt-3 flex items-center gap-3">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-surface-container-low text-ink-500">
+            <svg lucideBuilding2 [size]="22"></svg>
+          </div>
+          <p class="min-w-0 truncate text-base font-semibold text-ink-900">{{ est.teamName }}</p>
+        </div>
+      </section>
+
+      <!-- Summary card -->
+      <section class="rounded-card border border-ink-300 bg-surface p-4 sm:p-5 lg:col-span-2">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h2 class="flex items-center gap-2 text-sm font-semibold text-ink-500">
+              <svg lucideReceipt [size]="16" class="shrink-0"></svg>
+              {{ 'estimates.view.summaryTitle' | translate }}
+            </h2>
+            <dl class="mt-3 space-y-2 text-sm">
+              <div class="flex items-center justify-between gap-3">
+                <dt class="text-ink-500">{{ 'estimates.view.estimateNumberLabel' | translate }}</dt>
+                <dd class="font-medium text-ink-900">{{ est.estimateNumber }}</dd>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <dt class="text-ink-500">{{ 'estimates.view.createdAtLabel' | translate }}</dt>
+                <dd class="font-medium text-ink-900">{{ formatDate(est.createdAt) }}</dd>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <dt class="text-ink-500">{{ 'estimates.view.statusLabel' | translate }}</dt>
+                <dd><app-status-pill context="estimate" [status]="est.status" /></dd>
+              </div>
+            </dl>
+          </div>
+          <div class="shrink-0">
+            <app-qr-code [value]="est.estimateNumber" [size]="112" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bill of quantities, grouped by category -->
+    <section class="mt-6">
+      <h2 class="text-base font-semibold text-ink-900">{{ 'estimates.view.boqTitle' | translate }}</h2>
+      <div class="mt-3 space-y-5">
+        @for (group of boqGroups(); track group.category) {
+          <div class="rounded-card border border-ink-300 bg-surface">
+            <h3 class="border-b border-ink-300 px-4 py-3 text-sm font-semibold text-ink-900">
+              {{ 'estimates.view.category.' + group.category | translate }}
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr class="border-b border-ink-300">
+                    <th class="px-4 py-2.5 text-start text-xs font-medium text-ink-500">{{ 'estimates.view.boq.description' | translate }}</th>
+                    <th class="px-4 py-2.5 text-end text-xs font-medium text-ink-500">{{ 'estimates.view.boq.quantity' | translate }}</th>
+                    <th class="px-4 py-2.5 text-end text-xs font-medium text-ink-500">{{ 'estimates.view.boq.unitCost' | translate }}</th>
+                    <th class="px-4 py-2.5 text-end text-xs font-medium text-ink-500">{{ 'estimates.view.boq.lineTotal' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of group.items; track item.id) {
+                    <tr class="border-b border-ink-300/60 last:border-b-0">
+                      <td class="px-4 py-2.5 text-sm text-ink-900">{{ item.description }}</td>
+                      <td class="whitespace-nowrap px-4 py-2.5 text-end text-sm text-ink-700">{{ item.quantity }} {{ item.unit }}</td>
+                      <td class="whitespace-nowrap px-4 py-2.5 text-end text-sm text-ink-700">${{ item.unitCost }}</td>
+                      <td class="whitespace-nowrap px-4 py-2.5 text-end text-sm font-medium text-ink-900">${{ item.totalCost }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Calculation summary -->
+    <section class="mt-6 rounded-card border border-ink-300 bg-surface p-4 sm:p-5 lg:max-w-md lg:ms-auto">
+      <h2 class="flex items-center gap-2 text-base font-semibold text-ink-900">
+        <svg lucideCalculator [size]="18" class="shrink-0"></svg>
+        {{ 'estimates.view.calc.title' | translate }}
+      </h2>
+      <dl class="mt-3 space-y-2 text-sm">
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-ink-500">{{ 'estimates.view.calc.subtotal' | translate }}</dt>
+          <dd class="font-medium text-ink-900">${{ est.subtotal }}</dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-ink-500">{{ 'estimates.view.calc.discounts' | translate }}</dt>
+          <dd class="font-medium text-ink-700">-${{ est.discounts }}</dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-ink-500">{{ 'estimates.view.calc.tax' | translate }}</dt>
+          <dd class="font-medium text-ink-900">${{ est.tax }}</dd>
+        </div>
+        <div class="mt-1 flex items-center justify-between gap-3 border-t border-ink-300 pt-3">
+          <dt class="text-base font-semibold text-ink-900">{{ 'estimates.view.calc.total' | translate }}</dt>
+          <dd class="text-base font-bold text-ink-900">${{ est.total }}</dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-ink-500">{{ 'estimates.view.calc.fundingRequired' | translate }}</dt>
+          <dd class="font-medium text-ink-900">${{ est.fundingRequired }}</dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-ink-500">{{ 'estimates.view.calc.fundedAmount' | translate }}</dt>
+          <dd class="font-medium text-brand-600">${{ est.fundedAmount }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Decision / status blocks -->
+    @switch (est.status) {
+      @case ('pendingApproval') {
+        <section class="mt-6 rounded-card border border-ink-300 bg-surface p-4 sm:p-5">
+          <h2 class="text-base font-semibold text-ink-900">{{ 'estimates.view.decision.title' | translate }}</h2>
+          <p class="mt-1 text-sm text-ink-500">{{ 'estimates.view.decision.intro' | translate }}</p>
+
+          <form [formGroup]="form" class="mt-4">
+            <label class="flex items-start gap-2.5 text-sm text-ink-700">
+              <input
+                type="checkbox"
+                formControlName="terms"
+                class="mt-0.5 h-5 w-5 shrink-0 rounded border-ink-300 text-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+              />
+              <span>{{ 'estimates.view.decision.termsLabel' | translate }}</span>
+            </label>
+          </form>
+
+          <div class="mt-4">
+            <p class="mb-2 text-sm font-medium text-ink-700">{{ 'estimates.view.decision.signatureLabel' | translate }}</p>
+            <app-signature-pad (signatureCaptured)="onSigned($event)" />
+            @if (signatureImage()) {
+              <p class="mt-2 text-sm text-brand-600">{{ 'estimates.view.decision.signatureCaptured' | translate }}</p>
+            }
+          </div>
+
+          @if (!canApprove() && !submitting()) {
+            <p class="mt-4 text-sm text-ink-500">{{ 'estimates.view.decision.approveHint' | translate }}</p>
+          }
+
+          <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-5 text-sm font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+              [disabled]="!canApprove()"
+              (click)="approve()"
+            >
+              {{ 'estimates.view.decision.approve' | translate }}
+            </button>
+            <button
+              type="button"
+              class="inline-flex min-h-11 items-center justify-center rounded-card border border-danger px-5 text-sm font-medium text-danger hover:bg-error-container disabled:cursor-not-allowed disabled:opacity-50"
+              [disabled]="submitting()"
+              (click)="reject()"
+            >
+              {{ 'estimates.view.decision.reject' | translate }}
+            </button>
+          </div>
+        </section>
+      }
+
+      @case ('approved') {
+        <section class="mt-6 rounded-card border border-brand-100 bg-brand-100/40 p-4 sm:p-5">
+          <div class="flex items-start gap-3">
+            <svg lucideBadgeCheck [size]="22" class="mt-0.5 shrink-0 text-brand-600"></svg>
+            <div>
+              <p class="text-sm font-semibold text-brand-800">{{ 'estimates.view.approvedTitle' | translate }}</p>
+              @if (est.approvedAt) {
+                <p class="mt-1 text-sm text-ink-700">
+                  {{ 'estimates.view.approvedAtLabel' | translate: { date: formatDate(est.approvedAt) } }}
+                </p>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      @case ('rejected') {
+        <section class="mt-6 rounded-card border border-danger/40 bg-error-container p-4 sm:p-5">
+          <div class="flex items-start gap-3">
+            <svg lucideAlertTriangle [size]="22" class="mt-0.5 shrink-0 text-danger"></svg>
+            <div>
+              <p class="text-sm font-semibold text-on-error-container">{{ 'estimates.view.rejectedTitle' | translate }}</p>
+              @if (est.rejectionReason) {
+                <p class="mt-1 text-sm text-on-error-container">
+                  {{ 'estimates.view.rejectionReasonLabel' | translate }}: {{ est.rejectionReason }}
+                </p>
+              }
+            </div>
+          </div>
+        </section>
+      }
+    }
+  } @else if (!loading()) {
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center text-ink-500">
+      {{ 'estimates.view.notFound' | translate }}
+    </div>
+  }
+</div>

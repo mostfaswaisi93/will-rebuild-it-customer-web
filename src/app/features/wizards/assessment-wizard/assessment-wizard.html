@@ -1,0 +1,213 @@
+<app-page-header
+  [title]="'wizards.assessment.title' | translate"
+  [subtitle]="'wizards.assessment.subtitle' | translate"
+  [showBack]="true"
+/>
+
+<div class="mx-auto mt-4 max-w-2xl">
+  @if (loading()) {
+    <div class="rounded-card bg-surface p-6 shadow-card">
+      <div class="h-2 w-full animate-pulse rounded-full bg-ink-300/40"></div>
+      <div class="mt-6 space-y-3">
+        <div class="h-5 w-2/3 animate-pulse rounded bg-ink-300/40"></div>
+        <div class="h-11 w-full animate-pulse rounded-card bg-ink-300/40"></div>
+        <div class="h-11 w-full animate-pulse rounded-card bg-ink-300/40"></div>
+      </div>
+    </div>
+  } @else if (loadError()) {
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+      <p class="font-medium text-ink-900">{{ 'wizards.assessment.loadError' | translate }}</p>
+      <button
+        type="button"
+        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-5 text-sm font-semibold text-white hover:bg-brand-600"
+        (click)="retryLoad()"
+      >
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else if (result(); as created) {
+    <div class="rounded-card bg-surface p-6 text-center shadow-card sm:p-8">
+      <svg lucideCircleCheck [size]="48" class="mx-auto text-brand-500"></svg>
+      <h2 class="mt-4 text-xl font-semibold text-ink-900">{{ 'wizards.assessment.confirm.title' | translate }}</h2>
+      <p class="mt-2 text-sm text-ink-500">{{ 'wizards.assessment.confirm.body' | translate }}</p>
+
+      <div class="mx-auto mt-5 max-w-xs rounded-card bg-surface-container-low px-4 py-3">
+        <p class="text-xs text-ink-500">{{ 'wizards.assessment.confirm.requestNumber' | translate }}</p>
+        <p class="mt-1 text-lg font-semibold text-ink-900">{{ created.requestNumber }}</p>
+      </div>
+
+      <a
+        [routerLink]="['/app/requests', created.id]"
+        class="mt-6 inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white hover:bg-brand-600"
+      >
+        {{ 'wizards.assessment.confirm.viewRequest' | translate }}
+      </a>
+    </div>
+  } @else {
+    <div class="relative">
+      <app-spinner-overlay [active]="isSubmitting()" />
+
+      <app-wizard-stepper
+        [stepNumber]="stepNumber()"
+        [totalSteps]="totalSteps()"
+        [title]="isDetailsStep() ? ('wizards.assessment.steps.details' | translate) : (currentQuestion()?.prompt ?? '')"
+      />
+
+      @if (!isDetailsStep() && currentQuestion(); as question) {
+        <div class="rounded-card bg-surface p-5 shadow-card sm:p-6">
+          @switch (question.inputType) {
+            @case ('radio') {
+              <div role="radiogroup" class="flex flex-col gap-3">
+                @for (option of question.options ?? []; track option.id) {
+                  <button
+                    type="button"
+                    role="radio"
+                    [attr.aria-checked]="radioValue(question.id) === option.id"
+                    class="flex min-h-11 items-center rounded-card border-2 px-4 py-3 text-start text-base transition-colors"
+                    [class]="
+                      radioValue(question.id) === option.id
+                        ? 'border-brand-500 bg-brand-50 font-semibold text-brand-700'
+                        : 'border-ink-300 bg-surface-container-low text-ink-700 hover:border-outline'
+                    "
+                    (click)="selectRadio(question.id, option.id)"
+                  >
+                    {{ option.label }}
+                  </button>
+                }
+              </div>
+            }
+            @case ('dropdown') {
+              <select
+                class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+                [value]="radioValue(question.id) ?? ''"
+                (change)="selectRadio(question.id, $any($event.target).value)"
+              >
+                <option value="" disabled>{{ 'wizards.assessment.selectPlaceholder' | translate }}</option>
+                @for (option of question.options ?? []; track option.id) {
+                  <option [value]="option.id">{{ option.label }}</option>
+                }
+              </select>
+            }
+            @case ('checkbox') {
+              <div class="flex flex-wrap gap-2">
+                @for (option of question.options ?? []; track option.id) {
+                  <button
+                    type="button"
+                    [attr.aria-pressed]="checkboxValues(question.id).includes(option.id)"
+                    class="inline-flex min-h-11 items-center rounded-card border-2 px-4 text-sm transition-colors"
+                    [class]="
+                      checkboxValues(question.id).includes(option.id)
+                        ? 'border-brand-500 bg-brand-50 font-semibold text-brand-700'
+                        : 'border-ink-300 bg-surface-container-low text-ink-700 hover:border-outline'
+                    "
+                    (click)="toggleCheckbox(question.id, option.id)"
+                  >
+                    {{ option.label }}
+                  </button>
+                }
+              </div>
+            }
+            @case ('number') {
+              <input
+                type="number"
+                inputmode="numeric"
+                min="0"
+                [value]="numberValue(question.id)"
+                (input)="setNumber(question.id, $any($event.target).value)"
+                class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+              />
+            }
+            @case ('date') {
+              <input
+                type="date"
+                [value]="textValue(question.id)"
+                (input)="setText(question.id, $any($event.target).value)"
+                class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+              />
+            }
+            @default {
+              <input
+                type="text"
+                [value]="textValue(question.id)"
+                (input)="setText(question.id, $any($event.target).value)"
+                class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+              />
+            }
+          }
+
+          @if (questionError()) {
+            <p class="mt-3 text-sm text-danger">{{ 'wizards.assessment.questionRequired' | translate }}</p>
+          }
+        </div>
+      }
+
+      @if (isDetailsStep()) {
+        <form [formGroup]="detailsForm" class="flex flex-col gap-6 rounded-card bg-surface p-5 shadow-card sm:p-6">
+          <div>
+            <label for="assessment-description" class="mb-1 block text-sm font-medium text-ink-700">
+              {{ 'wizards.assessment.fields.description' | translate }}
+            </label>
+            <textarea
+              id="assessment-description"
+              formControlName="description"
+              rows="4"
+              [placeholder]="'wizards.assessment.fields.descriptionPlaceholder' | translate"
+              class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low px-3 py-2 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+            ></textarea>
+            @if (detailsForm.controls.description.touched && detailsForm.controls.description.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+            }
+          </div>
+
+          <div>
+            <span class="mb-2 block text-sm font-medium text-ink-700">
+              {{ 'wizards.assessment.fields.photos' | translate }}
+            </span>
+            <app-file-uploader [files]="photos()" (filesChange)="photos.set($event)" />
+          </div>
+
+          <div>
+            <span class="mb-2 block text-sm font-medium text-ink-700">
+              {{ 'wizards.assessment.fields.location' | translate }}
+            </span>
+            <app-address-picker formControlName="address" />
+            @if (detailsForm.controls.address.touched && detailsForm.controls.address.invalid) {
+              <p class="mt-1 text-sm text-danger">{{ 'wizards.assessment.errors.location' | translate }}</p>
+            }
+          </div>
+
+          <label class="flex items-start gap-3">
+            <input
+              type="checkbox"
+              formControlName="consent"
+              class="mt-0.5 h-5 w-5 shrink-0 rounded border-ink-300 text-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+            />
+            <span class="text-sm text-ink-700">{{ 'wizards.assessment.fields.consent' | translate }}</span>
+          </label>
+          @if (detailsForm.controls.consent.touched && detailsForm.controls.consent.invalid) {
+            <p class="-mt-3 text-sm text-danger">{{ 'common.requiredField' | translate }}</p>
+          }
+        </form>
+      }
+
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-card border border-outline px-5 text-sm font-medium text-ink-700 hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
+          [disabled]="stepIndex() === 0"
+          (click)="goBack()"
+        >
+          {{ 'common.previous' | translate }}
+        </button>
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-6 text-sm font-semibold text-white transition-colors hover:enabled:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="isSubmitting()"
+          (click)="goNext()"
+        >
+          {{ (isDetailsStep() ? 'wizards.assessment.submit' : 'common.next') | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

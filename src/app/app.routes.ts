@@ -21,14 +21,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/email-check/email-check').then((m) => m.EmailCheck),
   },
   {
+    path: 'pub/donate',
+    loadComponent: () => import('./features/donations/donate/donate').then((m) => m.Donate),
+  },
+  {
     path: 'pub/donate/:projectId',
-    loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-    data: { titleKey: 'nav.donations' },
+    loadComponent: () => import('./features/donations/donate/donate').then((m) => m.Donate),
   },
   {
     path: 'pub/new-beneficiary',
-    loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-    data: { titleKey: 'requests.list.title' },
+    loadComponent: () => import('./features/wizards/new-beneficiary/new-beneficiary').then((m) => m.NewBeneficiary),
+  },
+  {
+    path: 'pub/new-beneficiary/:teamId',
+    loadComponent: () => import('./features/wizards/new-beneficiary/new-beneficiary').then((m) => m.NewBeneficiary),
   },
   {
     path: 'auth/callback',
@@ -41,7 +47,13 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/app-shell/app-shell').then((m) => m.AppShell),
     canActivate: [authGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'requests' },
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+
+      {
+        path: 'dashboard',
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/dashboard/dashboard/dashboard').then((m) => m.Dashboard),
+      },
 
       {
         path: 'requests',
@@ -55,13 +67,11 @@ export const routes: Routes = [
       },
       {
         path: 'request/new',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.requests' },
+        loadComponent: () => import('./features/wizards/assessment-wizard/assessment-wizard').then((m) => m.AssessmentWizard),
       },
       {
         path: 'request/to-team/:teamId',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.requests' },
+        loadComponent: () => import('./features/wizards/request-wizard/request-wizard').then((m) => m.RequestWizard),
       },
 
       {
@@ -93,95 +103,89 @@ export const routes: Routes = [
 
       {
         path: 'estimates',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.estimates' },
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/estimates/estimates-list/estimates-list').then((m) => m.EstimatesList),
       },
       {
         path: 'estimates/:estimateId',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.estimates' },
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/estimates/estimate-view/estimate-view').then((m) => m.EstimateView),
       },
 
       {
         path: 'funding',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.funding' },
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/funding/funding-list/funding-list').then((m) => m.FundingList),
       },
       {
         path: 'funding/:fundingId',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.funding' },
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/funding/funding-details/funding-details').then((m) => m.FundingDetails),
       },
       {
         path: 'funding/:fundingId/sign',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.funding' },
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/funding/funding-signature/funding-signature').then((m) => m.FundingSignature),
+      },
+      {
+        path: 'funding/:fundingId/txn/:txnId',
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () =>
+          import('./features/funding/disbursement-details/disbursement-details').then((m) => m.DisbursementDetails),
       },
 
       {
         path: 'donations',
         canActivate: [roleGuard(['donor'])],
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.donations' },
+        loadComponent: () => import('./features/donations/donations-list/donations-list').then((m) => m.DonationsList),
       },
       {
         path: 'donations/new',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.donations' },
+        loadComponent: () => import('./features/donations/donate/donate').then((m) => m.Donate),
       },
       {
         path: 'donations/:donationId',
         canActivate: [roleGuard(['donor'])],
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.donations' },
+        loadComponent: () => import('./features/donations/donation-detail/donation-detail').then((m) => m.DonationDetail),
       },
 
       {
         path: 'profile',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.profile' },
+        loadComponent: () => import('./features/account/profile/profile').then((m) => m.Profile),
       },
       {
         path: 'account',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.profile' },
+        loadComponent: () => import('./features/account/account/account').then((m) => m.Account),
       },
       {
         path: 'notifications',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.notifications' },
+        loadComponent: () => import('./features/notifications/notifications-list/notifications-list').then((m) => m.NotificationsList),
       },
 
       {
         path: 'support',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.support' },
+        loadComponent: () => import('./features/support/support-list/support-list').then((m) => m.SupportList),
       },
       {
         path: 'support/new',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.support' },
+        loadComponent: () => import('./features/support/support-form/support-form').then((m) => m.SupportForm),
       },
       {
         path: 'support/:ticketId',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.support' },
+        loadComponent: () => import('./features/support/support-view/support-view').then((m) => m.SupportView),
       },
 
       {
         path: 'complaints',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.reportTeam' },
+        loadComponent: () => import('./features/complaints/complaints-list/complaints-list').then((m) => m.ComplaintsList),
       },
       {
         path: 'complaints/new/:teamId',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.reportTeam' },
+        loadComponent: () => import('./features/complaints/complaint-form/complaint-form').then((m) => m.ComplaintForm),
       },
       {
         path: 'complaints/:complaintId',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'header.menu.reportTeam' },
+        loadComponent: () => import('./features/complaints/complaint-view/complaint-view').then((m) => m.ComplaintView),
       },
 
       {
@@ -192,18 +196,15 @@ export const routes: Routes = [
 
       {
         path: 'privacy',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'content.privacy' },
+        loadComponent: () => import('./features/content/privacy/privacy').then((m) => m.Privacy),
       },
       {
         path: 'terms',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'content.terms' },
+        loadComponent: () => import('./features/content/terms/terms').then((m) => m.Terms),
       },
       {
         path: 'help',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'content.help' },
+        loadComponent: () => import('./features/content/help-faq/help-faq').then((m) => m.HelpFaq),
       },
     ],
   },

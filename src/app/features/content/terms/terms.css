@@ -1,0 +1,71 @@
+/*
+  Prose styling for the server-authored, sanitized HTML injected via
+  [innerHTML]. Scoped to :host so it never leaks; ::ng-deep is required
+  because innerHTML children carry no Angular encapsulation attribute.
+*/
+:host ::ng-deep .content-body {
+  color: var(--color-ink-700);
+  line-height: 1.7;
+  font-size: 0.9375rem;
+}
+
+:host ::ng-deep .content-body > :first-child {
+  margin-top: 0;
+}
+
+:host ::ng-deep .content-body h1,
+:host ::ng-deep .content-body h2,
+:host ::ng-deep .content-body h3,
+:host ::ng-deep .content-body h4 {
+  color: var(--color-ink-900);
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep .content-body h1 {
+  font-size: 1.375rem;
+}
+
+:host ::ng-deep .content-body h2 {
+  font-size: 1.125rem;
+}
+
+:host ::ng-deep .content-body h3,
+:host ::ng-deep .content-body h4 {
+  font-size: 1rem;
+}
+
+:host ::ng-deep .content-body p {
+  margin-block: 0.75rem;
+}
+
+:host ::ng-deep .content-body ul,
+:host ::ng-deep .content-body ol {
+  margin-block: 0.75rem;
+  padding-inline-start: 1.5rem;
+}
+
+:host ::ng-deep .content-body ul {
+  list-style: disc;
+}
+
+:host ::ng-deep .content-body ol {
+  list-style: decimal;
+}
+
+:host ::ng-deep .content-body li {
+  margin-block: 0.25rem;
+}
+
+:host ::ng-deep .content-body a {
+  color: var(--color-brand-500);
+  text-decoration: underline;
+}
+
+:host ::ng-deep .content-body strong,
+:host ::ng-deep .content-body b {
+  color: var(--color-ink-900);
+  font-weight: 600;
+}

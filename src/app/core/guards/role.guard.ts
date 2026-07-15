@@ -23,9 +23,9 @@ function homeRouteForRole(role: UserRole | null): string {
     case 'donor':
       return 'donations';
     case 'team':
-      return 'requests';
+      return 'team-dashboard';
     case 'beneficiary':
     default:
-      return 'requests';
+      return 'dashboard';
   }
 }
