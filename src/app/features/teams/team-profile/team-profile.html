@@ -1,0 +1,195 @@
+<app-page-header [title]="team()?.name ?? ('teams.profile.title' | translate)" [showBack]="true" />
+
+<div class="relative min-h-40">
+  <app-spinner-overlay [active]="loading()" />
+
+  @if (notFound()) {
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-10 text-center">
+      <p class="text-sm font-medium text-ink-700">{{ 'teams.profile.notFound' | translate }}</p>
+    </div>
+  } @else if (loadError()) {
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-10 text-center">
+      <p class="text-sm font-medium text-ink-700">{{ 'common.errorGeneric' | translate }}</p>
+      <button
+        type="button"
+        class="mt-3 inline-flex min-h-11 items-center justify-center rounded-card border border-ink-300 px-4 text-sm font-medium text-brand-600 hover:bg-surface-container-low"
+        (click)="retry()"
+      >
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else if (team(); as t) {
+    <div class="rounded-card border border-ink-300 bg-surface p-4 shadow-card sm:p-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex items-start gap-4">
+          @if (t.logoUrl) {
+            <img [src]="t.logoUrl" [alt]="t.name" class="h-16 w-16 shrink-0 rounded-full object-cover" />
+          } @else {
+            <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-500 text-lg font-semibold text-white">
+              {{ initials(t.name) }}
+            </div>
+          }
+          <div class="min-w-0">
+            <h2 class="text-xl font-semibold text-ink-900">{{ t.name }}</h2>
+            <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-500">
+              <span>{{ 'teams.profile.completedProjects' | translate: { count: t.completedProjectsCount } }}</span>
+              @if (workingSinceYear(); as year) {
+                <span class="inline-flex items-center gap-1 rounded-full bg-surface-container-low px-2 py-0.5 text-xs text-ink-700">
+                  <svg lucideCalendar [size]="12"></svg>
+                  {{ 'teams.profile.workingSince' | translate: { year } }}
+                </span>
+              }
+            </div>
+            <div class="mt-2 flex items-center gap-2">
+              <app-rating-stars [value]="t.averageRating" [readonly]="true" />
+              <span class="text-sm text-ink-500">{{ 'teams.profile.reviewsCount' | translate: { count: t.reviewsCount } }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 sm:w-64 sm:shrink-0">
+          @if (isAuthenticated()) {
+            <a
+              [routerLink]="['/app/request/to-team', teamId()]"
+              class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-4 text-sm font-medium text-white hover:bg-brand-600"
+            >
+              {{ 'teams.profile.requestReconstruction' | translate }}
+            </a>
+            <a
+              [routerLink]="['/app/complaints/new', teamId()]"
+              class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card border border-ink-300 px-4 text-sm font-medium text-ink-700 hover:bg-surface-container-low"
+            >
+              <svg lucideFlag [size]="16"></svg>
+              {{ 'teams.profile.reportTeam' | translate }}
+            </a>
+          } @else {
+            <a
+              routerLink="/pub/email-check/request"
+              class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card bg-brand-500 px-4 text-center text-sm font-medium text-white hover:bg-brand-600"
+            >
+              <svg lucideLogIn [size]="16"></svg>
+              {{ 'teams.profile.signInToRequest' | translate }}
+            </a>
+          }
+        </div>
+      </div>
+
+      @if (t.isLicensed || t.isInsured || t.acceptsLargeProjects) {
+        <div class="mt-4 flex flex-wrap gap-2">
+          @if (t.isLicensed) {
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
+              <svg lucideBadgeCheck [size]="14"></svg>
+              {{ 'teams.profile.badges.licensed' | translate }}
+            </span>
+          }
+          @if (t.isInsured) {
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
+              <svg lucideShieldCheck [size]="14"></svg>
+              {{ 'teams.profile.badges.insured' | translate }}
+            </span>
+          }
+          @if (t.acceptsLargeProjects) {
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
+              <svg lucideBuilding2 [size]="14"></svg>
+              {{ 'teams.profile.badges.acceptsLargeProjects' | translate }}
+            </span>
+          }
+        </div>
+      }
+
+      <p class="mt-4 text-sm leading-relaxed text-ink-700">{{ t.bio }}</p>
+    </div>
+
+    <section class="mt-6 rounded-card border border-ink-300 bg-surface p-4 shadow-card sm:p-6">
+      <h3 class="text-base font-semibold text-ink-900">{{ 'teams.profile.reviewsTitle' | translate }}</h3>
+
+      @if (reviews().length === 0) {
+        <p class="mt-3 text-sm text-ink-500">{{ 'teams.profile.noReviews' | translate }}</p>
+      } @else {
+        <ul class="mt-3 divide-y divide-ink-300">
+          @for (review of reviews(); track review.id) {
+            <li class="py-3 first:pt-0 last:pb-0">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="text-sm font-medium text-ink-900">{{ review.authorName }}</p>
+                <p class="text-xs text-ink-500">{{ review.createdAt.slice(0, 10) }}</p>
+              </div>
+              <app-rating-stars [value]="averageReviewScore(review)" [readonly]="true" />
+              @if (review.comments) {
+                <p class="mt-1 text-sm text-ink-700">{{ review.comments }}</p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <h3 class="text-sm font-semibold text-ink-900">{{ 'teams.profile.servicesTitle' | translate }}</h3>
+        @if (t.services.length === 0) {
+          <p class="mt-2 text-sm text-ink-500">{{ 'teams.profile.noServices' | translate }}</p>
+        } @else {
+          <div class="mt-2 divide-y divide-ink-300">
+            @for (service of t.services; track service.id) {
+              <details class="group py-2">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-medium text-ink-900 [&::-webkit-details-marker]:hidden">
+                  {{ service.title }}
+                  <svg lucideChevronDown [size]="16" class="shrink-0 text-ink-500 transition-transform group-open:rotate-180"></svg>
+                </summary>
+                <p class="mt-2 text-sm text-ink-700">{{ service.description }}</p>
+              </details>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <h3 class="text-sm font-semibold text-ink-900">{{ 'teams.profile.coverageTitle' | translate }}</h3>
+        @if (hasCoordinates()) {
+          <div class="mt-3">
+            <app-map [markers]="mapMarkers()" heightClass="h-56" />
+          </div>
+        } @else if (t.coverageAreas.length === 0) {
+          <p class="mt-2 text-sm text-ink-500">{{ 'teams.profile.noCoverage' | translate }}</p>
+        } @else {
+          <div class="mt-3 flex flex-wrap gap-2">
+            @for (area of t.coverageAreas; track area.governorate + area.district) {
+              <span class="rounded-full bg-surface-container-low px-2.5 py-1 text-xs text-ink-700">
+                {{ ('master.governorate.' + area.governorate) | translate }} · {{ area.district }}
+              </span>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <h3 class="text-sm font-semibold text-ink-900">{{ 'teams.profile.hoursTitle' | translate }}</h3>
+        <ul class="mt-3 divide-y divide-ink-300 text-sm">
+          @for (hours of sortedBusinessHours(); track hours.dayOfWeek) {
+            <li class="flex items-center justify-between py-1.5">
+              <span class="text-ink-700">{{ ('teams.profile.day.' + dayKey(hours.dayOfWeek)) | translate }}</span>
+              @if (hours.isClosed) {
+                <span class="text-ink-500">{{ 'teams.profile.closed' | translate }}</span>
+              } @else {
+                <span class="text-ink-900">{{ hours.opensAt }}&nbsp;–&nbsp;{{ hours.closesAt }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    @if (t.portfolio.length > 0) {
+      <section class="mt-6 rounded-card border border-ink-300 bg-surface p-4 shadow-card sm:p-6">
+        <h3 class="text-base font-semibold text-ink-900">{{ 'teams.profile.portfolioTitle' | translate }}</h3>
+        <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          @for (item of t.portfolio; track item.id) {
+            <a [href]="item.url" target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-card border border-ink-300">
+              <img [src]="item.url" [alt]="item.fileName" class="h-28 w-full object-cover" />
+            </a>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>

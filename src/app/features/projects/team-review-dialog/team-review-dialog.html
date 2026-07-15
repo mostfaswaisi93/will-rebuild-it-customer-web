@@ -1,0 +1,64 @@
+<app-dialog-shell [titleKey]="'projects.teamReview.title'">
+  <form [formGroup]="form" class="space-y-5">
+    <div class="space-y-1.5">
+      <p class="text-sm font-medium text-ink-900">{{ 'projects.teamReview.workQuality' | translate }}</p>
+      <app-rating-stars
+        [value]="form.controls.workQuality.value"
+        [readonly]="false"
+        (valueChange)="form.controls.workQuality.setValue($event)"
+      />
+    </div>
+
+    <div class="space-y-1.5">
+      <p class="text-sm font-medium text-ink-900">{{ 'projects.teamReview.timeliness' | translate }}</p>
+      <app-rating-stars
+        [value]="form.controls.timeliness.value"
+        [readonly]="false"
+        (valueChange)="form.controls.timeliness.setValue($event)"
+      />
+    </div>
+
+    <div class="space-y-1.5">
+      <p class="text-sm font-medium text-ink-900">{{ 'projects.teamReview.professionalism' | translate }}</p>
+      <app-rating-stars
+        [value]="form.controls.professionalism.value"
+        [readonly]="false"
+        (valueChange)="form.controls.professionalism.setValue($event)"
+      />
+    </div>
+
+    <div class="space-y-1.5">
+      <label for="teamReviewComments" class="text-sm font-medium text-ink-900">
+        {{ 'projects.teamReview.comments' | translate }}
+      </label>
+      <textarea
+        id="teamReviewComments"
+        formControlName="comments"
+        rows="4"
+        class="w-full rounded-card border border-ink-300 bg-surface px-3 py-2 text-sm text-ink-900 placeholder:text-ink-500 focus-visible:border-brand-500"
+        [placeholder]="'projects.teamReview.commentsPlaceholder' | translate"
+      ></textarea>
+      @if (form.controls.comments.touched && form.controls.comments.invalid) {
+        <p class="text-xs text-danger">{{ 'common.requiredField' | translate }}</p>
+      }
+    </div>
+  </form>
+
+  <button
+    dialogShellFooter
+    type="button"
+    class="inline-flex min-h-11 items-center justify-center rounded-card border border-outline px-4 py-2 text-sm font-medium text-ink-700 hover:bg-surface-container-low"
+    (click)="cancel()"
+  >
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button
+    dialogShellFooter
+    type="button"
+    class="inline-flex min-h-11 items-center justify-center rounded-card bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+    [disabled]="form.invalid || submitting()"
+    (click)="submit()"
+  >
+    {{ 'common.submit' | translate }}
+  </button>
+</app-dialog-shell>

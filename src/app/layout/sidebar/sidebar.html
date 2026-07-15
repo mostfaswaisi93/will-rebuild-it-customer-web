@@ -1,0 +1,52 @@
+<!-- Mobile backdrop -->
+@if (sidebarState.isOpen()) {
+  <button
+    type="button"
+    class="fixed inset-0 z-30 cursor-default bg-ink-900/50 lg:hidden"
+    [attr.aria-label]="'common.close' | translate"
+    (click)="sidebarState.close()"
+  ></button>
+}
+
+<aside
+  class="fixed inset-y-0 start-0 z-40 flex w-72 flex-col bg-nav-bg text-white transition-transform duration-200 ease-linear lg:static lg:z-auto lg:w-64 lg:!translate-x-0"
+  [class]="panelTransformClass()"
+>
+  <div class="flex items-center justify-between gap-3 px-5 py-5">
+    <a routerLink="/app" class="flex items-center gap-3" (click)="closeOnNavigate()">
+      <svg viewBox="0 0 40 40" class="h-8 w-8 shrink-0" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="18" height="18" rx="4" fill="var(--color-brand-500)" />
+        <rect x="22" y="0" width="18" height="18" rx="4" fill="var(--color-sand-500)" />
+        <rect x="0" y="22" width="18" height="18" rx="4" fill="var(--color-sand-500)" />
+        <path d="M22 40 V31 A9 9 0 0 1 40 31 V40 Z" fill="var(--color-brand-500)" />
+      </svg>
+      <span class="leading-tight">
+        <span class="block text-sm font-semibold text-white">{{ 'brand.nameEn' | translate }}</span>
+        <span class="block text-xs text-white/60">{{ 'brand.nameAr' | translate }}</span>
+      </span>
+    </a>
+    <button
+      type="button"
+      class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-white/80 hover:bg-nav-hover lg:hidden"
+      [attr.aria-label]="'common.close' | translate"
+      (click)="sidebarState.close()"
+    >
+      <svg lucideX [size]="20"></svg>
+    </button>
+  </div>
+
+  <nav class="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+    @for (item of navItems(); track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="bg-brand-500 text-white"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="flex min-h-11 items-center gap-3 rounded-card px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-nav-hover hover:text-white"
+        (click)="closeOnNavigate()"
+      >
+        <svg [lucideIcon]="item.icon" [size]="20"></svg>
+        {{ item.labelKey | translate }}
+      </a>
+    }
+  </nav>
+</aside>

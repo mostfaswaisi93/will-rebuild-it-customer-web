@@ -1,0 +1,92 @@
+@if (loading()) {
+  <div class="hidden overflow-x-auto md:block">
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="border-b border-ink-300">
+          @for (column of columns(); track column.key) {
+            <th class="px-4 py-3 text-sm font-medium text-ink-500" [class]="alignClass(column.align)">
+              {{ column.headerKey | translate }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (i of skeletonRows; track i) {
+          <tr class="border-b border-ink-300/60 last:border-b-0">
+            @for (column of columns(); track column.key) {
+              <td class="px-4 py-3">
+                <div class="h-4 w-3/4 animate-pulse rounded bg-ink-300/40"></div>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid gap-3 md:hidden">
+    @for (i of skeletonRows; track i) {
+      <div class="rounded-card border border-ink-300 bg-surface p-4">
+        <div class="space-y-3">
+          @for (column of columns(); track column.key) {
+            <div class="h-4 w-2/3 animate-pulse rounded bg-ink-300/40"></div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+} @else if (rows().length === 0) {
+  <ng-content select="[dataTableEmpty]">
+    <div class="rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center text-ink-500">
+      {{ 'common.noResults' | translate }}
+    </div>
+  </ng-content>
+} @else {
+  <div class="hidden overflow-x-auto md:block">
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="border-b border-ink-300">
+          @for (column of columns(); track column.key) {
+            <th class="px-4 py-3 text-sm font-medium text-ink-500" [class]="alignClass(column.align)">
+              {{ column.headerKey | translate }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track trackRow(row, $index)) {
+          <tr
+            [class]="rowClasses(row)"
+            [routerLink]="linkFor(row)"
+            [attr.tabindex]="linkFor(row) ? 0 : null"
+          >
+            @for (column of columns(); track column.key) {
+              <td class="px-4 py-3 text-ink-700" [class]="alignClass(column.align)">
+                {{ column.cell(row) }}
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid gap-3 md:hidden">
+    @for (row of rows(); track trackRow(row, $index)) {
+      <div
+        [class]="cardClasses(row)"
+        [routerLink]="linkFor(row)"
+        [attr.tabindex]="linkFor(row) ? 0 : null"
+      >
+        <dl class="space-y-2">
+          @for (column of columns(); track column.key) {
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-xs font-medium text-ink-500">{{ column.headerKey | translate }}</dt>
+              <dd class="text-end text-sm font-medium text-ink-900">{{ column.cell(row) }}</dd>
+            </div>
+          }
+        </dl>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,124 @@
+<app-page-header [title]="'teams.list.title' | translate" [subtitle]="'teams.list.subtitle' | translate" />
+
+<app-filter-bar
+  [search]="search()"
+  (searchChange)="onSearchChange($event)"
+  (clear)="onClearFilters()"
+  searchPlaceholderKey="teams.list.searchPlaceholder"
+>
+  <select
+    #governorateSelect
+    class="min-h-11 rounded-card border border-ink-300 bg-surface px-3 text-sm text-ink-900 focus-visible:border-brand-500"
+    [attr.aria-label]="'teams.list.governorateFilter' | translate"
+    [value]="governorate()"
+    (change)="onGovernorateChange(governorateSelect.value)"
+  >
+    <option value="">{{ 'teams.list.allGovernorates' | translate }}</option>
+    @for (option of governorateOptions; track option) {
+      <option [value]="option">{{ ('master.governorate.' + option) | translate }}</option>
+    }
+  </select>
+
+  <select
+    #specializationSelect
+    class="min-h-11 rounded-card border border-ink-300 bg-surface px-3 text-sm text-ink-900 focus-visible:border-brand-500"
+    [attr.aria-label]="'teams.list.specializationFilter' | translate"
+    [value]="specialization()"
+    (change)="onSpecializationChange(specializationSelect.value)"
+  >
+    <option value="">{{ 'teams.list.allSpecializations' | translate }}</option>
+    @for (option of specializationOptions; track option.value) {
+      <option [value]="option.value">{{ option.labelKey | translate }}</option>
+    }
+  </select>
+</app-filter-bar>
+
+<div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  @if (loading()) {
+    @for (placeholder of skeletonPlaceholders; track placeholder) {
+      <div class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <div class="flex items-center gap-3">
+          <app-skeleton variant="avatar" />
+          <div class="flex-1 space-y-2">
+            <app-skeleton variant="title" />
+            <app-skeleton variant="text" />
+          </div>
+        </div>
+        <div class="mt-4 space-y-2">
+          <app-skeleton variant="text" />
+          <app-skeleton variant="text" />
+        </div>
+      </div>
+    }
+  } @else if (items().length === 0) {
+    <div class="col-span-full flex flex-col items-center gap-2 rounded-card border border-dashed border-ink-300 bg-surface p-10 text-center">
+      <svg lucideUsers [size]="28" class="text-ink-500"></svg>
+      <p class="text-sm font-medium text-ink-700">{{ 'common.noResults' | translate }}</p>
+    </div>
+  } @else {
+    @for (team of items(); track team.id) {
+      <a
+        [routerLink]="['/app/teams', team.id]"
+        class="flex flex-col gap-3 rounded-card border border-ink-300 bg-surface p-4 shadow-card transition hover:border-brand-500"
+      >
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex min-w-0 items-center gap-3">
+            @if (team.logoUrl) {
+              <img [src]="team.logoUrl" [alt]="team.name" class="h-11 w-11 shrink-0 rounded-full object-cover" />
+            } @else {
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-500 text-sm font-semibold text-white">
+                {{ initials(team.name) }}
+              </div>
+            }
+            <div class="min-w-0">
+              <h3 class="truncate font-semibold text-ink-900">{{ team.name }}</h3>
+              @if (distinctGovernorates(team); as governorates) {
+                <p class="flex items-center gap-1 truncate text-xs text-ink-500">
+                  <svg lucideMapPin [size]="14" class="shrink-0"></svg>
+                  <span class="truncate">
+                    @for (gov of governorates; track gov; let last = $last) {
+                      {{ ('master.governorate.' + gov) | translate }}{{ last ? '' : ', ' }}
+                    }
+                  </span>
+                </p>
+              }
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-card border"
+            [class]="team.isFollowedByCurrentUser ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-ink-300 text-ink-500 hover:bg-surface-container-low'"
+            [attr.aria-pressed]="team.isFollowedByCurrentUser ?? false"
+            [attr.aria-label]="(team.isFollowedByCurrentUser ? 'teams.list.unfollow' : 'teams.list.follow') | translate"
+            (click)="$event.stopPropagation(); $event.preventDefault(); onToggleFollow(team)"
+          >
+            <svg lucideHeart [size]="18" [style.fill]="team.isFollowedByCurrentUser ? 'currentColor' : 'none'"></svg>
+          </button>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5">
+          @for (spec of team.specializations; track spec) {
+            <span class="rounded-full bg-surface-container-low px-2 py-0.5 text-xs text-ink-700">
+              {{ specializationLabelKey(spec) ? (specializationLabelKey(spec) | translate) : spec }}
+            </span>
+          }
+        </div>
+
+        <div class="mt-auto flex items-center justify-between text-sm">
+          <div class="flex items-center gap-1.5">
+            <app-rating-stars [value]="team.averageRating" [readonly]="true" />
+            <span class="text-ink-500">({{ team.reviewsCount }})</span>
+          </div>
+          <span class="text-ink-500">{{ 'teams.list.completedProjects' | translate: { count: team.completedProjectsCount } }}</span>
+        </div>
+      </a>
+    }
+  }
+</div>
+
+@if (!loading() && items().length > 0) {
+  <div class="mt-6">
+    <app-paginator [pageNo]="pageNo()" [pageSize]="pageSize()" [totalCount]="totalCount()" (pageChange)="onPageChange($event)" />
+  </div>
+}

@@ -1,0 +1,110 @@
+<app-public-nav />
+
+<main class="relative mx-auto max-w-md px-4 py-10 sm:py-14">
+  <app-spinner-overlay [active]="isSubmitting()" />
+
+  <div class="mb-8 text-center">
+    <h1 class="text-2xl font-bold text-ink-900 sm:text-3xl">
+      {{ (isDonateContext() ? 'auth.emailCheck.titleDonate' : 'auth.emailCheck.title') | translate }}
+    </h1>
+    <p class="mt-2 text-sm text-ink-500">{{ 'auth.emailCheck.subtitle' | translate }}</p>
+  </div>
+
+  <form [formGroup]="form" class="rounded-card bg-surface p-5 shadow-card sm:p-6" (ngSubmit)="onFormSubmit()">
+    <div class="mb-4">
+      <label for="email-check-email" class="mb-1 block text-sm font-medium text-ink-700">
+        {{ 'auth.emailCheck.emailLabel' | translate }}
+      </label>
+      <div class="relative">
+        <svg lucideMail [size]="16" class="pointer-events-none absolute inset-s-3 top-1/2 -translate-y-1/2 text-ink-500"></svg>
+        <input
+          id="email-check-email"
+          type="email"
+          formControlName="email"
+          [readOnly]="step() !== 'email'"
+          [class.bg-surface-container]="step() !== 'email'"
+          autocomplete="email"
+          class="min-h-11 w-full rounded-card border border-ink-300 bg-surface-container-low ps-9 pe-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:outline focus:outline-2 focus:outline-brand-500/30"
+        />
+      </div>
+      @if (emailControl.touched && emailControl.invalid) {
+        <p class="mt-1 text-xs text-danger">{{ 'common.requiredField' | translate }}</p>
+      }
+    </div>
+
+    @if (step() === 'email') {
+      <button
+        type="submit"
+        class="flex min-h-11 w-full items-center justify-center rounded-card bg-brand-500 text-sm font-semibold text-white transition-colors hover:enabled:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="isSubmitting()"
+      >
+        {{ 'common.next' | translate }}
+      </button>
+    }
+
+    @if (step() === 'password') {
+      <div class="mb-3">
+        <app-password-field formControlName="password" [labelKey]="'auth.emailCheck.passwordLabel'" />
+        @if (passwordErrorKey(); as errorKey) {
+          <p class="mt-1 text-xs text-danger">{{ errorKey | translate }}</p>
+        }
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          class="min-h-11 shrink-0 text-sm font-medium text-ink-500 hover:text-ink-700"
+          (click)="changeEmail()"
+        >
+          {{ 'common.back' | translate }}
+        </button>
+        <button
+          type="submit"
+          class="flex min-h-11 flex-1 items-center justify-center rounded-card bg-brand-500 text-sm font-semibold text-white transition-colors hover:enabled:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="isSubmitting()"
+        >
+          {{ 'common.signIn' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (step() === 'unavailable') {
+      <div class="rounded-card bg-surface-container-low p-4 text-sm text-ink-700">
+        {{ 'auth.emailCheck.unavailableBody' | translate }}
+      </div>
+      <button
+        type="button"
+        class="mt-3 min-h-11 text-sm font-medium text-ink-500 hover:text-ink-700"
+        (click)="changeEmail()"
+      >
+        {{ 'auth.emailCheck.tryAnotherEmail' | translate }}
+      </button>
+    }
+  </form>
+
+  <section class="mt-8 rounded-card border border-dashed border-outline-variant bg-surface-container-low p-5">
+    <h2 class="mb-1 flex items-center gap-2 text-sm font-semibold text-ink-900">
+      <svg lucideUserCheck [size]="16"></svg>
+      {{ 'auth.emailCheck.demo.title' | translate }}
+    </h2>
+    <p class="mb-4 text-xs text-ink-500">{{ 'auth.emailCheck.demo.subtitle' | translate }}</p>
+
+    <ul class="space-y-2">
+      @for (account of demoAccounts; track account.email) {
+        <li class="flex items-center justify-between gap-3 rounded-card bg-surface px-3 py-2">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-ink-900">{{ account.labelKey | translate }}</p>
+            <p class="truncate text-xs text-ink-500" dir="ltr">{{ account.email }}</p>
+          </div>
+          <button
+            type="button"
+            class="min-h-11 shrink-0 rounded-card border border-brand-500/40 px-3 text-xs font-medium text-brand-700 hover:bg-brand-50"
+            (click)="fillDemoAccount(account)"
+          >
+            {{ 'auth.emailCheck.demo.fillIn' | translate }}
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+</main>
