@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AbstractControl,
@@ -11,7 +11,14 @@ import {
 import { LucideCircleCheck } from '@lucide/angular';
 import { TranslatePipe } from '@core/i18n/translate.pipe';
 import { RequestsApi } from '@core/api/requests-api.service';
-import { Address, DamageSeverity, PropertyType, ReconstructionRequest } from '@core/models';
+import {
+  Address,
+  DamageSeverity,
+  GAZA_GOVERNORATES,
+  GazaGovernorate,
+  PropertyType,
+  ReconstructionRequest,
+} from '@core/models';
 import { ToastService } from '@core/toast/toast.service';
 import { AddressPicker } from '@shared/ui/address-picker/address-picker';
 import { DamageCategorySelect } from '@shared/ui/damage-category-select/damage-category-select';
@@ -70,6 +77,13 @@ function mustMatch(controlName: string, matchingControlName: string): ValidatorF
 })
 export class NewBeneficiary {
   readonly teamId = input<string>();
+  /**
+   * Optional area handed over by the public area-first funnel (`/pub/start`)
+   * as query params, bound by `withComponentInputBinding()`. Prefilling means
+   * someone who already told us where they live is not asked twice.
+   */
+  readonly governorate = input<string>();
+  readonly district = input<string>();
 
   private readonly fb = inject(FormBuilder);
   private readonly requestsApi = inject(RequestsApi);
@@ -125,6 +139,24 @@ export class NewBeneficiary {
     'description',
     'consent',
   ] as const;
+
+  constructor() {
+    // Seed the address from the area funnel, without clobbering anything the
+    // visitor has already typed here.
+    effect(() => {
+      const governorate = this.governorate();
+      if (!governorate || this.form.controls.address.value) {
+        return;
+      }
+      if (!(GAZA_GOVERNORATES as readonly string[]).includes(governorate)) {
+        return;
+      }
+      this.form.controls.address.setValue({
+        governorate: governorate as GazaGovernorate,
+        district: this.district() ?? '',
+      });
+    });
+  }
 
   protected onResend(): void {
     this.toast.success('wizards.newBeneficiary.verify.resent');

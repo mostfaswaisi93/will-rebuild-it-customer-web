@@ -17,7 +17,8 @@ export class SessionStore {
 
   readonly user = computed(() => this.state()?.user ?? null);
   readonly token = computed(() => this.state()?.token ?? null);
-  readonly role = computed<UserRole | null>(() => this.state()?.user.role ?? null);
+  // Optional-chain the whole path: a malformed persisted session must never throw here.
+  readonly role = computed<UserRole | null>(() => this.state()?.user?.role ?? null);
   readonly isAuthenticated = computed(() => this.state() !== null);
 
   setSession(session: StoredSession): void {
@@ -50,9 +51,28 @@ export class SessionStore {
       return null;
     }
     try {
-      return JSON.parse(raw) as StoredSession;
+      const parsed: unknown = JSON.parse(raw);
+      // Valid JSON is not the same as a valid session: `{"token":"x"}` parses
+      // fine but would otherwise present as signed-in with no user. Anything
+      // that fails the shape check is treated as signed-out.
+      return isStoredSession(parsed) ? parsed : null;
     } catch {
       return null;
     }
   }
+}
+
+function isStoredSession(value: unknown): value is StoredSession {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+  const candidate = value as Partial<StoredSession>;
+  return (
+    typeof candidate.token === 'string' &&
+    candidate.token.length > 0 &&
+    candidate.user !== null &&
+    typeof candidate.user === 'object' &&
+    typeof candidate.user.id === 'string' &&
+    typeof candidate.user.role === 'string'
+  );
 }

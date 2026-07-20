@@ -27,6 +27,7 @@ export const seedUsers: User[] = [
     email: 'team@example.com',
     phone: '+970592223344',
     createdAt: '2025-12-01T08:00:00.000Z',
+    teamId: 'team-1',
   },
 ];
 

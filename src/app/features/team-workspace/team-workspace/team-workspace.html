@@ -1,0 +1,230 @@
+<div class="pb-10">
+  <app-page-header
+    [title]="
+      firstName()
+        ? ('teamWorkspace.greeting' | translate: { name: firstName() })
+        : ('teamWorkspace.greetingGeneric' | translate)
+    "
+    [subtitle]="teamName() || ('teamWorkspace.subtitle' | translate)"
+  />
+
+  @if (hasError()) {
+    <div class="mt-4 rounded-card border border-dashed border-ink-300 bg-surface p-10 text-center">
+      <p class="text-sm font-medium text-ink-700">{{ 'common.errorGeneric' | translate }}</p>
+      <button
+        type="button"
+        class="mt-3 inline-flex min-h-11 items-center justify-center rounded-card border border-ink-300 px-4 text-sm font-medium text-brand-600 hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+        (click)="load()"
+      >
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else {
+    <!-- Stat tiles -->
+    <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-3">
+      @if (loading()) {
+        @for (i of skeletonTiles; track i) {
+          <div class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+            <app-skeleton class="block" variant="text" />
+            <div class="mt-3">
+              <app-skeleton class="block" variant="title" />
+            </div>
+          </div>
+        }
+      } @else {
+        @for (tile of statTiles(); track tile.labelKey) {
+          <app-impact-card [labelKey]="tile.labelKey" [valueLabel]="tile.valueLabel" />
+        }
+      }
+    </div>
+
+    <!-- Panels -->
+    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Assigned projects -->
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <h2 class="text-base font-semibold text-ink-900">
+            {{ 'teamWorkspace.projects.title' | translate }}
+          </h2>
+        </div>
+
+        @if (loading()) {
+          <div class="space-y-3">
+            @for (i of skeletonRows; track i) {
+              <div class="rounded-card border border-ink-300 p-4">
+                <app-skeleton class="block" variant="text" />
+                <div class="mt-3">
+                  <app-skeleton class="block" variant="text" />
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (assignedProjects().length === 0) {
+          <div class="rounded-card border border-dashed border-ink-300 p-8 text-center">
+            <svg lucideFolderKanban [size]="28" class="mx-auto text-ink-500"></svg>
+            <p class="mt-3 text-sm text-ink-500">{{ 'teamWorkspace.projects.empty' | translate }}</p>
+          </div>
+        } @else {
+          <div class="space-y-3">
+            @for (project of assignedProjects(); track project.id) {
+              <a
+                [routerLink]="['/app/projects', project.id]"
+                class="block rounded-card border border-ink-300 p-4 hover:border-brand-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="truncate font-medium text-ink-900">{{ project.title }}</p>
+                    <p class="mt-1 text-xs text-ink-500">{{ project.projectNumber }}</p>
+                  </div>
+                  <app-status-pill context="project" [status]="project.status" />
+                </div>
+                <p class="mt-2 truncate text-xs text-ink-700">
+                  {{ 'project.phase.' + project.currentPhaseKey | translate }}
+                </p>
+                <div class="mt-3 flex items-center gap-3">
+                  <div class="h-2 flex-1 overflow-hidden rounded-full bg-ink-300/30">
+                    <div
+                      class="h-full rounded-full bg-brand-500 transition-[width]"
+                      [style.width.%]="project.overallCompletionPercent"
+                    ></div>
+                  </div>
+                  <span class="shrink-0 text-xs font-medium text-ink-700">
+                    {{ project.overallCompletionPercent }}%
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Incoming matched requests -->
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <h2 class="text-base font-semibold text-ink-900">
+            {{ 'teamWorkspace.requests.title' | translate }}
+          </h2>
+        </div>
+
+        @if (loading()) {
+          <div class="space-y-3">
+            @for (i of skeletonRows; track i) {
+              <div class="rounded-card border border-ink-300 p-4">
+                <app-skeleton class="block" variant="text" />
+              </div>
+            }
+          </div>
+        } @else if (matchedRequests().length === 0) {
+          <div class="rounded-card border border-dashed border-ink-300 p-8 text-center">
+            <svg lucideInbox [size]="28" class="mx-auto text-ink-500"></svg>
+            <p class="mt-3 text-sm text-ink-500">{{ 'teamWorkspace.requests.empty' | translate }}</p>
+          </div>
+        } @else {
+          <div class="space-y-3">
+            @for (request of matchedRequests(); track request.id) {
+              <a
+                [routerLink]="['/app/requests', request.id]"
+                class="flex items-start justify-between gap-3 rounded-card border border-ink-300 p-4 hover:border-brand-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              >
+                <div class="min-w-0">
+                  <p class="truncate font-medium text-ink-900">{{ request.requestNumber }}</p>
+                  <p class="mt-1 truncate text-xs text-ink-500">
+                    {{ 'master.propertyType.' + request.propertyType | translate }}
+                  </p>
+                  <p class="mt-1 truncate text-xs text-ink-500">
+                    {{ 'master.governorate.' + request.address.governorate | translate }}
+                  </p>
+                </div>
+                <app-status-pill context="request" [status]="request.status" />
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Estimates -->
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <h2 class="text-base font-semibold text-ink-900">
+            {{ 'teamWorkspace.estimates.title' | translate }}
+          </h2>
+        </div>
+
+        @if (loading()) {
+          <div class="space-y-3">
+            @for (i of skeletonRows; track i) {
+              <div class="rounded-card border border-ink-300 p-4">
+                <app-skeleton class="block" variant="text" />
+              </div>
+            }
+          </div>
+        } @else if (estimates().length === 0) {
+          <div class="rounded-card border border-dashed border-ink-300 p-8 text-center">
+            <svg lucideCalculator [size]="28" class="mx-auto text-ink-500"></svg>
+            <p class="mt-3 text-sm text-ink-500">{{ 'teamWorkspace.estimates.empty' | translate }}</p>
+          </div>
+        } @else {
+          <div class="space-y-3">
+            @for (estimate of estimates(); track estimate.id) {
+              <a
+                [routerLink]="['/app/estimates', estimate.id]"
+                class="flex items-start justify-between gap-3 rounded-card border border-ink-300 p-4 hover:border-brand-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              >
+                <div class="min-w-0">
+                  <p class="truncate font-medium text-ink-900">{{ estimate.estimateNumber }}</p>
+                  <p class="mt-1 truncate text-xs text-ink-500">{{ estimate.projectTitle }}</p>
+                </div>
+                <div class="flex shrink-0 flex-col items-end gap-2">
+                  <app-status-pill context="estimate" [status]="estimate.status" />
+                  <span class="text-sm font-medium text-ink-900">{{ estimateTotal(estimate) }}</span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Recent reviews -->
+      <section class="rounded-card border border-ink-300 bg-surface p-4 shadow-card">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <h2 class="text-base font-semibold text-ink-900">
+            {{ 'teamWorkspace.reviews.title' | translate }}
+          </h2>
+        </div>
+
+        @if (loading()) {
+          <div class="space-y-3">
+            @for (i of skeletonRows; track i) {
+              <div class="rounded-card border border-ink-300 p-4">
+                <app-skeleton class="block" variant="text" />
+                <div class="mt-3">
+                  <app-skeleton class="block" variant="text" />
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (reviews().length === 0) {
+          <div class="rounded-card border border-dashed border-ink-300 p-8 text-center">
+            <svg lucideMessageSquare [size]="28" class="mx-auto text-ink-500"></svg>
+            <p class="mt-3 text-sm text-ink-500">{{ 'teamWorkspace.reviews.empty' | translate }}</p>
+          </div>
+        } @else {
+          <div class="space-y-3">
+            @for (review of reviews(); track review.id) {
+              <article class="rounded-card border border-ink-300 p-4">
+                <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                  <p class="min-w-0 truncate font-medium text-ink-900">{{ review.authorName }}</p>
+                  <app-rating-stars [value]="overallScore(review)" [readonly]="true" />
+                </div>
+                @if (review.comments) {
+                  <p class="mt-2 text-sm leading-relaxed text-ink-700">{{ review.comments }}</p>
+                }
+                <p class="mt-2 text-xs text-ink-500">{{ review.createdAt | date: 'mediumDate' }}</p>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+</div>

@@ -10,6 +10,8 @@ export interface User {
   phone: string;
   avatarUrl?: string;
   createdAt: string;
+  /** Set only for `role: 'team'` — the reconstruction team this user works for. */
+  teamId?: string;
 }
 
 export interface BeneficiaryProfile extends User {

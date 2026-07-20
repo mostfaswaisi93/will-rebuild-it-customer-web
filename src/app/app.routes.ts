@@ -17,6 +17,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/teams/team-profile/team-profile').then((m) => m.TeamProfile),
   },
   {
+    path: 'pub/start',
+    loadComponent: () => import('./features/public/area-start/area-start').then((m) => m.AreaStart),
+  },
+  {
     path: 'pub/email-check/:ctx',
     loadComponent: () => import('./features/auth/email-check/email-check').then((m) => m.EmailCheck),
   },
@@ -61,8 +65,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/requests/requests-list/requests-list').then((m) => m.RequestsList),
       },
       {
+        // Also reachable by the assigned team from its workspace.
         path: 'requests/:requestId',
-        canActivate: [roleGuard(['beneficiary'])],
+        canActivate: [roleGuard(['beneficiary', 'team'])],
         loadComponent: () => import('./features/requests/request-view/request-view').then((m) => m.RequestView),
       },
       {
@@ -80,8 +85,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/projects/projects-list/projects-list').then((m) => m.ProjectsList),
       },
       {
+        // Also reachable by the assigned team from its workspace.
         path: 'projects/:projectId',
-        canActivate: [roleGuard(['beneficiary'])],
+        canActivate: [roleGuard(['beneficiary', 'team'])],
         loadComponent: () => import('./features/projects/project-view/project-view').then((m) => m.ProjectView),
       },
 
@@ -97,8 +103,7 @@ export const routes: Routes = [
       {
         path: 'team-dashboard',
         canActivate: [roleGuard(['team'])],
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.teamDashboard' },
+        loadComponent: () => import('./features/team-workspace/team-workspace/team-workspace').then((m) => m.TeamWorkspace),
       },
 
       {
@@ -107,8 +112,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/estimates/estimates-list/estimates-list').then((m) => m.EstimatesList),
       },
       {
+        // Also reachable by the authoring team from its workspace.
         path: 'estimates/:estimateId',
-        canActivate: [roleGuard(['beneficiary'])],
+        canActivate: [roleGuard(['beneficiary', 'team'])],
         loadComponent: () => import('./features/estimates/estimate-view/estimate-view').then((m) => m.EstimateView),
       },
 
@@ -158,6 +164,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/account/account/account').then((m) => m.Account),
       },
       {
+        path: 'email-preferences',
+        loadComponent: () =>
+          import('./features/account/email-preferences/email-preferences').then((m) => m.EmailPreferences),
+      },
+      {
         path: 'notifications',
         loadComponent: () => import('./features/notifications/notifications-list/notifications-list').then((m) => m.NotificationsList),
       },
@@ -190,8 +201,8 @@ export const routes: Routes = [
 
       {
         path: 'reviews',
-        loadComponent: () => import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
-        data: { titleKey: 'nav.teams' },
+        canActivate: [roleGuard(['beneficiary'])],
+        loadComponent: () => import('./features/reviews/reviews-list/reviews-list').then((m) => m.ReviewsList),
       },
 
       {

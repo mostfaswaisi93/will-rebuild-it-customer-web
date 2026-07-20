@@ -1,11 +1,10 @@
 import { Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
+import { AppLocale, DEFAULT_LOCALE, LOCALE_STORAGE_KEY } from './app-locale';
+import { TranslationParams, interpolate, resolveEntry, selectPluralForm } from './i18n-format.util';
 
-export type AppLocale = 'en' | 'ar';
-
-const STORAGE_KEY = 'grp-locale';
-const DEFAULT_LOCALE: AppLocale = 'en';
+export type { AppLocale };
 
 type Dictionary = Record<string, unknown>;
 
@@ -31,7 +30,7 @@ export class TranslationService {
       }
       document.documentElement.lang = locale;
       document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
-      localStorage.setItem(STORAGE_KEY, locale);
+      localStorage.setItem(LOCALE_STORAGE_KEY, locale);
     });
   }
 
@@ -43,40 +42,22 @@ export class TranslationService {
     this.locale.set(this.locale() === 'en' ? 'ar' : 'en');
   }
 
-  translate(key: string, params?: Record<string, string | number>): string {
-    const resolved = this.resolve(key, this.dictionary());
-    if (resolved === undefined) {
-      return key;
-    }
-    return this.interpolate(resolved, params);
+  /**
+   * Resolves a key to display copy. Plural selection and interpolation live in
+   * `i18n-format.util` as pure functions so they can be exhaustively tested
+   * without standing up an HTTP-backed dictionary.
+   */
+  translate(key: string, params?: TranslationParams): string {
+    const entry = resolveEntry(key, this.dictionary());
+    const form = selectPluralForm(entry, this.locale(), params);
+    return form === undefined ? key : interpolate(form, params);
   }
 
   private readInitialLocale(): AppLocale {
     if (!isPlatformBrowser(this.platformId)) {
       return DEFAULT_LOCALE;
     }
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     return stored === 'en' || stored === 'ar' ? stored : DEFAULT_LOCALE;
-  }
-
-  private resolve(key: string, dictionary: Dictionary): string | undefined {
-    let current: unknown = dictionary;
-    for (const segment of key.split('.')) {
-      if (current !== null && typeof current === 'object' && segment in (current as Dictionary)) {
-        current = (current as Dictionary)[segment];
-      } else {
-        return undefined;
-      }
-    }
-    return typeof current === 'string' ? current : undefined;
-  }
-
-  private interpolate(value: string, params?: Record<string, string | number>): string {
-    if (!params) {
-      return value;
-    }
-    return value.replace(/\{\{\s*(\w+)\s*\}\}/g, (_match, token: string) =>
-      token in params ? String(params[token]) : '',
-    );
   }
 }

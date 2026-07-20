@@ -65,11 +65,19 @@ export const handleTeams: MockHandler = (ctx) => {
       createdAt: new Date().toISOString(),
     };
     ctx.store.teamReviews.push(review);
-    const allReviews = ctx.store.teamReviews.filter((candidate) => candidate.teamId === teamId);
-    team.reviewsCount = allReviews.length;
-    team.averageRating =
-      allReviews.reduce((sum, r) => sum + (r.workQuality + r.timeliness + r.professionalism) / 3, 0) /
-      allReviews.length;
+
+    // Update the aggregate INCREMENTALLY rather than recomputing from the
+    // reviews held in memory. A team's historical review count (e.g. 21) is
+    // deliberately larger than the handful of full review bodies seeded here,
+    // exactly as a real backend would expose a running total without shipping
+    // every review to the client. Recomputing would make the displayed count
+    // visibly collapse (21 -> 3) the moment a user posts a review.
+    const reviewScore = (review.workQuality + review.timeliness + review.professionalism) / 3;
+    const previousCount = team.reviewsCount;
+    const nextCount = previousCount + 1;
+    team.averageRating = (team.averageRating * previousCount + reviewScore) / nextCount;
+    team.reviewsCount = nextCount;
+
     return created(review);
   }
 

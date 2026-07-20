@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { LucideGlobe } from '@lucide/angular';
 import { TranslatePipe } from '@core/i18n/translate.pipe';
 import { TranslationService } from '@core/i18n/translation.service';
+import { BrandMark } from '@shared/ui/brand-mark/brand-mark';
 
 /**
  * Lightweight top nav for every public (`/pub/*`) page — these pages are
@@ -12,7 +13,7 @@ import { TranslationService } from '@core/i18n/translation.service';
  */
 @Component({
   selector: 'app-public-nav',
-  imports: [RouterLink, LucideGlobe, TranslatePipe],
+  imports: [RouterLink, LucideGlobe, TranslatePipe, BrandMark],
   templateUrl: './public-nav.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

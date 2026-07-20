@@ -70,7 +70,11 @@ const CONTEXT_TONES: Record<StatusPillContext, ToneMap> = {
  * `neutral` tone so an unexpected backend value never crashes rendering.
  */
 export function resolveStatusTone(context: StatusPillContext, status: string): StatusToneResult {
-  const tone = CONTEXT_TONES[context][status] ?? 'neutral';
+  // `Object.hasOwn`, not `??`: the tone maps are plain object literals, so a
+  // status like "toString" or "constructor" would otherwise resolve to the
+  // inherited Object.prototype member instead of falling back to neutral.
+  const tones = CONTEXT_TONES[context];
+  const tone = Object.hasOwn(tones, status) ? tones[status] : 'neutral';
   return {
     tone,
     labelKey: `shared.statusPill.${context}.${status}`,

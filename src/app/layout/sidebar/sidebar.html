@@ -14,12 +14,7 @@
 >
   <div class="flex items-center justify-between gap-3 px-5 py-5">
     <a routerLink="/app" class="flex items-center gap-3" (click)="closeOnNavigate()">
-      <svg viewBox="0 0 40 40" class="h-8 w-8 shrink-0" aria-hidden="true" focusable="false">
-        <rect x="0" y="0" width="18" height="18" rx="4" fill="var(--color-brand-500)" />
-        <rect x="22" y="0" width="18" height="18" rx="4" fill="var(--color-sand-500)" />
-        <rect x="0" y="22" width="18" height="18" rx="4" fill="var(--color-sand-500)" />
-        <path d="M22 40 V31 A9 9 0 0 1 40 31 V40 Z" fill="var(--color-brand-500)" />
-      </svg>
+      <app-brand-mark [size]="32" emerald="var(--color-brand-300)" sand="var(--color-sand-300)" />
       <span class="leading-tight">
         <span class="block text-sm font-semibold text-white">{{ 'brand.nameEn' | translate }}</span>
         <span class="block text-xs text-white/60">{{ 'brand.nameAr' | translate }}</span>

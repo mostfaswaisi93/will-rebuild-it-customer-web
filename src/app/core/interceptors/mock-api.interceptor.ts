@@ -17,6 +17,8 @@ import { handleSupport } from '../mock/handlers/support.handler';
 import { handleComplaints } from '../mock/handlers/complaints.handler';
 import { handleNotifications } from '../mock/handlers/notifications.handler';
 import { handleProfile } from '../mock/handlers/profile.handler';
+import { handleTeamWorkspace } from '../mock/handlers/team-workspace.handler';
+import { handleReviews } from '../mock/handlers/reviews.handler';
 
 const handlers = [
   handleAuth,
@@ -31,6 +33,8 @@ const handlers = [
   handleComplaints,
   handleNotifications,
   handleProfile,
+  handleTeamWorkspace,
+  handleReviews,
 ];
 
 /**
@@ -47,7 +51,10 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(MockStore);
   const platformId = inject(PLATFORM_ID);
 
-  const rawPath = req.url.slice(environment.apiUrl.length) || '/';
+  // `urlWithParams`, not `url`: HttpClient keeps `params` OUT of `req.url`, so
+  // reading `url` here would drop every query param (filters, paging, lang)
+  // and silently serve unfiltered defaults.
+  const rawPath = req.urlWithParams.slice(environment.apiUrl.length) || '/';
   const [pathname, queryString] = rawPath.split('?');
   const segments = pathname.split('/').filter(Boolean);
 

@@ -8,6 +8,7 @@ import {
   LucideFileText,
   LucideHeart,
   LucideLayoutDashboard,
+  LucideStar,
   LucideUsers,
   LucideWallet,
   LucideX,
@@ -15,6 +16,7 @@ import {
 } from '@lucide/angular';
 import { TranslatePipe } from '@core/i18n/translate.pipe';
 import { SessionStore } from '@core/session/session-store.service';
+import { BrandMark } from '@shared/ui/brand-mark/brand-mark';
 import { SidebarStateService } from '../sidebar-state.service';
 
 interface NavItem {
@@ -30,6 +32,7 @@ const BENEFICIARY_NAV: NavItem[] = [
   { labelKey: 'nav.teams', path: '/app/teams', icon: LucideUsers },
   { labelKey: 'nav.estimates', path: '/app/estimates', icon: LucideCalculator },
   { labelKey: 'nav.funding', path: '/app/funding', icon: LucideWallet },
+  { labelKey: 'nav.reviews', path: '/app/reviews', icon: LucideStar },
 ];
 
 const DONOR_NAV: NavItem[] = [
@@ -37,11 +40,19 @@ const DONOR_NAV: NavItem[] = [
   { labelKey: 'nav.browseProjects', path: '/pub', icon: LucideCompass },
 ];
 
-const TEAM_NAV: NavItem[] = [{ labelKey: 'nav.teamDashboard', path: '/app/team-dashboard', icon: LucideLayoutDashboard }];
+/**
+ * Only the team's own workspace: the project/estimate LIST endpoints are not
+ * team-scoped in the mock backend, so linking a team member at them would show
+ * other teams' records. The workspace itself is properly scoped, and it links
+ * out to the individual records this team is assigned to.
+ */
+const TEAM_NAV: NavItem[] = [
+  { labelKey: 'nav.teamDashboard', path: '/app/team-dashboard', icon: LucideLayoutDashboard },
+];
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, LucideX, LucideDynamicIcon, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, LucideX, LucideDynamicIcon, TranslatePipe, BrandMark],
   templateUrl: './sidebar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

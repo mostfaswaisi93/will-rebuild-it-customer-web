@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
   AppNotification,
-  AssessmentQuestion,
   BeneficiaryProfile,
   Complaint,
   Donation,
@@ -56,7 +55,8 @@ export class MockStore {
   readonly supportTickets: SupportTicket[] = structuredClone(seedSupportTickets);
   readonly complaints: Complaint[] = structuredClone(seedComplaints);
   readonly notifications: AppNotification[] = structuredClone(seedNotifications);
-  readonly assessmentQuestions: AssessmentQuestion[] = structuredClone(seedAssessmentQuestions);
+  /** Stored bilingual; the master handler resolves them to the caller's locale. */
+  readonly assessmentQuestions: typeof seedAssessmentQuestions = structuredClone(seedAssessmentQuestions);
   beneficiaryProfile: BeneficiaryProfile = structuredClone(seedBeneficiaryProfile);
   notificationPreferences: NotificationPreferences = structuredClone(seedNotificationPreferences);
 

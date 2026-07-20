@@ -1,3 +1,4 @@
+import { localizeAssessmentQuestions } from '../fixtures/assessment.fixture';
 import { MockHandler, ok } from '../mock-types';
 
 export const handleMaster: MockHandler = (ctx) => {
@@ -14,7 +15,7 @@ export const handleMaster: MockHandler = (ctx) => {
   }
 
   if (ctx.segments[1] === 'assessment-questions') {
-    return ok(ctx.store.assessmentQuestions);
+    return ok(localizeAssessmentQuestions(ctx.store.assessmentQuestions, ctx.query.get('lang') ?? 'en'));
   }
 
   return undefined;
