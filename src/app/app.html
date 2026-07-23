@@ -7,7 +7,8 @@
   {{ 'a11y.skipToContent' | translate }}
 </a>
 
-<!-- Renders only while the mock backend is active. -->
+<!-- Each renders only when it applies: mock backend active / connection lost. -->
 <app-demo-banner />
+<app-offline-banner />
 
 <router-outlet />

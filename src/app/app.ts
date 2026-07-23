@@ -5,13 +5,14 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, skip } from 'rxjs';
 import { TranslatePipe } from '@core/i18n/translate.pipe';
 import { DemoBanner } from '@layout/demo-banner/demo-banner';
+import { OfflineBanner } from '@layout/offline-banner/offline-banner';
 
 /** Every page renders inside a `<main id="main-content">` landmark. */
 const MAIN_CONTENT_ID = 'main-content';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TranslatePipe, DemoBanner],
+  imports: [RouterOutlet, TranslatePipe, DemoBanner, OfflineBanner],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

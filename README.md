@@ -221,6 +221,12 @@ Unit tests cover the logic most likely to break silently, per the spec's require
 
 The interceptor spec was verified to be a *real* guard by reinstating the original bug and confirming exactly the expected specs failed.
 
+### Before going live
+The app currently runs on the mock backend, and says so on screen. To point it at a real API:
+1. Set `useMockApi: false` and `apiUrl` in `src/environments/environment.ts`.
+2. The sample-data banner and the console warning disappear on their own.
+3. Replace the illustrative tiles in `public/img/` — they are drawings, not photographs, and are referenced only from `core/mock/fixtures/`.
+
 ### Known deferrals
 - **Stripe / card capture** for donations is intentionally deferred; the donation flow is functional against the mock backend without real payment.
 - **Admin console** is out of scope for this phase.
@@ -231,6 +237,9 @@ The interceptor spec was verified to be a *real* guard by reinstating the origin
 
 ## Changelog
 
+- **Network-failure handling, the app's core operating condition.** The platform targets weak, intermittent connections, but every failure path was untested and a dropped connection was reported identically to a server crash — "something went wrong", which is useless advice when the real answer is "wait and retry". Added a `NetworkStatusService` (browser connectivity *plus* evidence from actually-failed requests, since `navigator.onLine` only reports the link layer), an offline banner that appears on connection loss and clears on recovery, and distinct messages for offline vs. server error. Covered by 6 new tests for the 401 / offline / 5xx / recovery / 404 / non-API branches.
+- **Sample-data labelling.** The app presents named families, damage reports, funding totals and completed-rebuild counts that read as real records of real people. A banner now states plainly that they are illustrative whenever the mock backend is active, and a production build running on mock data logs a loud console warning. Both disappear automatically once `useMockApi` is false — so mock data can no longer reach production unnoticed.
+- **Illustrative gallery imagery.** The photo galleries, phase thumbnails and carousel were fully built but every fixture array was empty, so none of them ever rendered. Added abstract blueprint tiles in the brand's archway motif — deliberately *not* photo-like, since fabricating imagery of destroyed homes would misrepresent real suffering. Only phases actually worked on carry photos; a pending phase showing progress imagery would be a lie about the site.
 - **Route-change focus management + skip link.** Completes the title work below: announcing a new title is only half the fix if focus stays on the link the user just left. Focus now moves to the `<main id="main-content">` landmark after each in-app navigation (skipping the initial load, and using `preventScroll` so it doesn't fight scroll restoration), and a translated "skip to main content" link is now the first item in the tab order. All seven `<main>` landmarks are focus targets.
 - **Per-page document titles + scroll restoration.** Previously all 44 routes shared one static `<title>`, so screen readers announced nothing on navigation — an accessibility defect, not a cosmetic one. Added a `TitleStrategy` that treats each route's `title` as a **translation key** and re-applies it when the language is toggled (a title resolved once would otherwise stay in the old language). Also enabled `scrollPositionRestoration`, so returning from a detail page lands where you were in the list.
 - **Closed the last two page-parity gaps** found by auditing the original app's route tables (see the parity table above). The original's zip-code lead funnel had no counterpart and is now **`/pub/start`** — an area-first entry point where a visitor picks their governorate and district, immediately sees which teams cover that area and how many rebuilds they've completed, then continues into the damage report with the area already filled in. Also restored the dedicated **`/app/email-preferences`** route.

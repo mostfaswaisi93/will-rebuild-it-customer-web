@@ -28,7 +28,9 @@
     "requiredField": "This field is required",
     "optional": "Optional",
     "signOut": "Sign out",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "errorOffline": "You appear to be offline. We could not reach the server — your connection may have dropped.",
+    "errorServer": "The server could not complete that request. Please try again in a moment."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -1071,6 +1073,7 @@
   },
   "a11y": {
     "skipToContent": "Skip to main content",
-    "demoData": "Preview using sample data — these projects, families and funds are illustrative, not real records."
+    "demoData": "Preview using sample data — these projects, families and funds are illustrative, not real records.",
+    "offlineNotice": "You are offline — showing the information last loaded on this device."
   }
 }
