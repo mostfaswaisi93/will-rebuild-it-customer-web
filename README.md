@@ -231,6 +231,7 @@ The interceptor spec was verified to be a *real* guard by reinstating the origin
 
 ## Changelog
 
+- **Per-page document titles + scroll restoration.** Previously all 44 routes shared one static `<title>`, so screen readers announced nothing on navigation — an accessibility defect, not a cosmetic one. Added a `TitleStrategy` that treats each route's `title` as a **translation key** and re-applies it when the language is toggled (a title resolved once would otherwise stay in the old language). Also enabled `scrollPositionRestoration`, so returning from a detail page lands where you were in the list.
 - **Closed the last two page-parity gaps** found by auditing the original app's route tables (see the parity table above). The original's zip-code lead funnel had no counterpart and is now **`/pub/start`** — an area-first entry point where a visitor picks their governorate and district, immediately sees which teams cover that area and how many rebuilds they've completed, then continues into the damage report with the area already filled in. Also restored the dedicated **`/app/email-preferences`** route.
 - **Added a unit test suite (143 tests)** covering the interceptor, i18n formatting, guards, session store, status tones, and mock handlers — the spec's service/guard/mapper coverage requirement. Writing it surfaced three real defects, now fixed:
   - `SessionStore` accepted *structurally* invalid persisted sessions (`{"token":"x"}` with no user) — it reported "signed in", then threw on `role()`. Now shape-checked, with a regression spec.
