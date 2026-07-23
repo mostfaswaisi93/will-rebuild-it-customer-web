@@ -1,0 +1,37 @@
+/*
+ * Skip link — visually hidden until it receives keyboard focus.
+ *
+ * Written as explicit CSS rather than `sr-only focus:not-sr-only` utilities.
+ * Both work (Tailwind emits `not-sr-only` after `sr-only`, so the focus
+ * variant does win), but the reveal is the whole point of a skip link and
+ * spelling it out here keeps it readable and independent of how a utility
+ * framework happens to order its output.
+ */
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 50;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-radius: var(--radius-card);
+  background-color: var(--color-brand-500);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  overflow: visible;
+  clip-path: none;
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+}

@@ -1,4 +1,5 @@
 import { Project, ProjectPhase, ProjectPhaseKey, ProjectTimelineEntry, PROJECT_PHASE_KEYS } from '@core/models';
+import { placeholderPhotos } from './attachments.fixture';
 
 const PHASE_RESPONSIBLE: Record<ProjectPhaseKey, string> = {
   damageAssessment: 'Site engineer',
@@ -10,22 +11,34 @@ const PHASE_RESPONSIBLE: Record<ProjectPhaseKey, string> = {
   handover: 'Project manager',
 };
 
-function buildPhases(activeIndex: number, activePercent: number, startDate: string): ProjectPhase[] {
+function buildPhases(
+  projectId: string,
+  activeIndex: number,
+  activePercent: number,
+  startDate: string,
+): ProjectPhase[] {
   const start = new Date(startDate).getTime();
   const dayMs = 1000 * 60 * 60 * 24;
 
   return PROJECT_PHASE_KEYS.map((key, index) => {
     const isCompleted = index < activeIndex;
     const isActive = index === activeIndex;
+    const startedAt = new Date(start + index * 18 * dayMs).toISOString();
     return {
       key,
       order: index + 1,
       status: isCompleted ? 'completed' : isActive ? 'inProgress' : 'pending',
       completionPercent: isCompleted ? 100 : isActive ? activePercent : 0,
-      startedAt: isCompleted || isActive ? new Date(start + index * 18 * dayMs).toISOString() : undefined,
+      startedAt: isCompleted || isActive ? startedAt : undefined,
       completedAt: isCompleted ? new Date(start + (index + 1) * 18 * dayMs).toISOString() : undefined,
       responsibleName: isCompleted || isActive ? PHASE_RESPONSIBLE[key] : undefined,
-      photos: [],
+      // Only phases that have actually been worked on carry photos; a pending
+      // phase showing progress imagery would be a lie about the site.
+      photos: isCompleted
+        ? placeholderPhotos(`${projectId}-${key}`, 2, startedAt)
+        : isActive
+          ? placeholderPhotos(`${projectId}-${key}`, 1, startedAt)
+          : [],
     };
   });
 }
@@ -52,10 +65,10 @@ export const seedProjects: Project[] = [
     requestId: 'request-1',
     currentPhaseKey: 'structure',
     overallCompletionPercent: 58,
-    damagePhotos: [],
-    progressPhotos: [],
+    damagePhotos: placeholderPhotos('project-1-damage', 2, '2026-02-20T08:00:00.000Z'),
+    progressPhotos: placeholderPhotos('project-1-progress', 4, '2026-02-20T08:00:00.000Z'),
     documents: [],
-    phases: buildPhases(4, 45, '2026-02-20T08:00:00.000Z'),
+    phases: buildPhases('project-1', 4, 45, '2026-02-20T08:00:00.000Z'),
     timeline: buildTimeline('project-1', [
       ['damageAssessment', 'Initial structural assessment completed; second floor confirmed unsafe.', '2026-02-22T08:00:00.000Z'],
       ['debrisRemoval', 'Collapsed second-floor debris cleared and sorted for reuse.', '2026-03-10T08:00:00.000Z'],
@@ -76,10 +89,10 @@ export const seedProjects: Project[] = [
     requestId: 'request-2',
     currentPhaseKey: 'handover',
     overallCompletionPercent: 100,
-    damagePhotos: [],
-    progressPhotos: [],
+    damagePhotos: placeholderPhotos('project-2-damage', 2, '2025-11-10T08:00:00.000Z'),
+    progressPhotos: placeholderPhotos('project-2-progress', 3, '2025-11-10T08:00:00.000Z'),
     documents: [],
-    phases: buildPhases(7, 0, '2025-11-10T08:00:00.000Z'),
+    phases: buildPhases('project-2', 7, 0, '2025-11-10T08:00:00.000Z'),
     timeline: buildTimeline('project-2', [
       ['damageAssessment', 'Full line survey completed across the affected block.', '2025-11-12T08:00:00.000Z'],
       ['debrisRemoval', 'Damaged pipe sections removed.', '2025-12-01T08:00:00.000Z'],
@@ -102,10 +115,10 @@ export const seedProjects: Project[] = [
     requestId: 'request-3',
     currentPhaseKey: 'foundation',
     overallCompletionPercent: 26,
-    damagePhotos: [],
-    progressPhotos: [],
+    damagePhotos: placeholderPhotos('project-3-damage', 3, '2026-03-08T08:00:00.000Z'),
+    progressPhotos: placeholderPhotos('project-3-progress', 2, '2026-03-08T08:00:00.000Z'),
     documents: [],
-    phases: buildPhases(3, 30, '2026-03-08T08:00:00.000Z'),
+    phases: buildPhases('project-3', 3, 30, '2026-03-08T08:00:00.000Z'),
     timeline: buildTimeline('project-3', [
       ['damageAssessment', 'Site confirmed as total loss; rebuild plan required.', '2026-03-10T08:00:00.000Z'],
       ['debrisRemoval', 'Site cleared and leveled.', '2026-03-25T08:00:00.000Z'],
@@ -124,10 +137,10 @@ export const seedProjects: Project[] = [
     requestId: 'request-5',
     currentPhaseKey: 'debrisRemoval',
     overallCompletionPercent: 12,
-    damagePhotos: [],
-    progressPhotos: [],
+    damagePhotos: placeholderPhotos('project-4-damage', 2, '2026-04-25T08:00:00.000Z'),
+    progressPhotos: placeholderPhotos('project-4-progress', 1, '2026-04-25T08:00:00.000Z'),
     documents: [],
-    phases: buildPhases(1, 20, '2026-04-25T08:00:00.000Z'),
+    phases: buildPhases('project-4', 1, 20, '2026-04-25T08:00:00.000Z'),
     timeline: buildTimeline('project-4', [
       ['damageAssessment', 'Damage assessment complete; irrigation system needs full replacement.', '2026-04-27T08:00:00.000Z'],
       ['debrisRemoval', 'Debris clearance paused pending replacement material delivery.', '2026-05-15T08:00:00.000Z'],

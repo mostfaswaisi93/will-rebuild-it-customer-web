@@ -23,10 +23,12 @@ describe('App', () => {
 
     const skip: HTMLAnchorElement | null = fixture.nativeElement.querySelector('a[href="#main-content"]');
     expect(skip).withContext('skip link must exist').not.toBeNull();
-    // Visually hidden until focused — `sr-only` off-screens it, `focus:not-sr-only`
-    // brings it back, so sighted users never see it but keyboard users do.
-    expect(skip!.className).toContain('sr-only');
-    expect(skip!.className).toContain('focus:not-sr-only');
+    expect(skip!.classList).withContext('styled by app.css, not Tailwind utilities').toContain('skip-link');
+
+    // It must be the first focusable thing on the page, otherwise a keyboard
+    // user tabs through the whole nav before reaching it.
+    const focusable = fixture.nativeElement.querySelectorAll('a[href], button, input, select, textarea');
+    expect(focusable[0]).toBe(skip!);
   });
 
   it('moves focus to the main landmark when asked', () => {

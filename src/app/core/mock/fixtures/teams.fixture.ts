@@ -1,4 +1,5 @@
 import { BusinessHours, Team, TeamReview } from '@core/models';
+import { placeholderPhotos } from './attachments.fixture';
 
 function standardBusinessHours(fridayClosed = true): BusinessHours[] {
   return [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
@@ -33,7 +34,7 @@ export const seedTeams: Team[] = [
       { id: 'svc-2', title: 'Full rebuild', description: 'End-to-end reconstruction from foundation to handover.' },
       { id: 'svc-3', title: 'Debris removal', description: 'Safe clearance and sorting of rubble and reusable materials.' },
     ],
-    portfolio: [],
+    portfolio: placeholderPhotos('team-1-work', 4, '2026-01-01T00:00:00.000Z'),
     phone: '+970592220001',
     email: 'contact@amalbuilders.example',
   },
@@ -59,7 +60,7 @@ export const seedTeams: Team[] = [
       { id: 'svc-4', title: 'Interior finishing', description: 'Plastering, tiling, plumbing, and electrical finishing.' },
       { id: 'svc-5', title: 'Roofing repair', description: 'Roof reinforcement and waterproofing.' },
     ],
-    portfolio: [],
+    portfolio: placeholderPhotos('team-2-work', 3, '2026-01-01T00:00:00.000Z'),
     phone: '+970592220002',
     email: 'contact@beitalard.example',
   },
@@ -85,7 +86,7 @@ export const seedTeams: Team[] = [
       { id: 'svc-6', title: 'Structural engineering', description: 'Full structural design and safety certification.' },
       { id: 'svc-7', title: 'Infrastructure rebuild', description: 'Roads, water lines, and public facility reconstruction.' },
     ],
-    portfolio: [],
+    portfolio: placeholderPhotos('team-3-work', 5, '2026-01-01T00:00:00.000Z'),
     phone: '+970592220003',
     email: 'contact@sumoud-eng.example',
   },
@@ -111,7 +112,7 @@ export const seedTeams: Team[] = [
       { id: 'svc-8', title: 'Home rebuild', description: 'Small to mid-size residential reconstruction.' },
       { id: 'svc-9', title: 'Agricultural structures', description: 'Rebuilding greenhouses, storage, and farm structures.' },
     ],
-    portfolio: [],
+    portfolio: placeholderPhotos('team-4-work', 2, '2026-01-01T00:00:00.000Z'),
     phone: '+970592220004',
     email: 'contact@rafahrebuild.example',
   },

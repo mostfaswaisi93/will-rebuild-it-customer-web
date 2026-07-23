@@ -1070,6 +1070,7 @@
     }
   },
   "a11y": {
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "demoData": "Preview using sample data — these projects, families and funds are illustrative, not real records."
   }
 }

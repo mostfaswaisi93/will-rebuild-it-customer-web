@@ -1,4 +1,5 @@
 import { ReconstructionRequest } from '@core/models';
+import { placeholderPhotos } from './attachments.fixture';
 
 export const seedRequests: ReconstructionRequest[] = [
   {
@@ -11,7 +12,7 @@ export const seedRequests: ReconstructionRequest[] = [
     description:
       'Two-story family home with a partially collapsed second floor and cracked load-bearing walls on the ground floor.',
     address: { governorate: 'northGaza', district: 'Beit Lahia', streetDescription: 'Near the old water tower' },
-    attachments: [],
+    attachments: placeholderPhotos('request-1-damage', 3, '2026-01-01T00:00:00.000Z'),
     contactName: 'Youssef Al-Najjar',
     contactPhone: '+970591234567',
     assignedTeamId: 'team-1',
@@ -27,7 +28,7 @@ export const seedRequests: ReconstructionRequest[] = [
     severity: 'totalLoss',
     description: 'Neighborhood water distribution line destroyed, serving roughly 40 households.',
     address: { governorate: 'deirAlBalah', district: 'Deir al-Balah' },
-    attachments: [],
+    attachments: placeholderPhotos('request-2-damage', 2, '2026-01-01T00:00:00.000Z'),
     contactName: 'Huda Kanaan',
     contactPhone: '+970598887766',
     assignedTeamId: 'team-3',
@@ -43,7 +44,7 @@ export const seedRequests: ReconstructionRequest[] = [
     severity: 'totalLoss',
     description: 'Single-family home fully collapsed; family currently in temporary shelter nearby.',
     address: { governorate: 'northGaza', district: 'Jabalia' },
-    attachments: [],
+    attachments: placeholderPhotos('request-3-damage', 2, '2026-01-01T00:00:00.000Z'),
     contactName: 'Mahmoud Sabbah',
     contactPhone: '+970591112233',
     assignedTeamId: 'team-1',
@@ -59,7 +60,7 @@ export const seedRequests: ReconstructionRequest[] = [
     severity: 'partial',
     description: 'Cracked exterior wall and broken windows after nearby shelling; structure otherwise stable.',
     address: { governorate: 'northGaza', district: 'Beit Lahia' },
-    attachments: [],
+    attachments: placeholderPhotos('request-4-damage', 1, '2026-01-01T00:00:00.000Z'),
     contactName: 'Youssef Al-Najjar',
     contactPhone: '+970591234567',
     matchedTeams: [
@@ -77,7 +78,7 @@ export const seedRequests: ReconstructionRequest[] = [
     severity: 'severe',
     description: 'Greenhouse structure and irrigation system damaged; family relies on it for income.',
     address: { governorate: 'rafah', district: 'Rafah' },
-    attachments: [],
+    attachments: placeholderPhotos('request-5-damage', 2, '2026-01-01T00:00:00.000Z'),
     contactName: 'Sami Owda',
     contactPhone: '+970594445566',
     assignedTeamId: 'team-4',
